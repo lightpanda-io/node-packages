@@ -1,0 +1,20 @@
+{
+  "packageManager": "yarn@4.9.2",
+  "name": "node-packages",
+  "version": "1.0.0",
+  "description": "Lightpanda's Packages for NPM",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightpanda-io/node-packages.git"
+  },
+  "author": "Nicolas Rigaudiere <nicolas@tonalogic.io>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/lightpanda-io/node-packages/issues"
+  },
+  "homepage": "https://github.com/lightpanda-io/node-packages#readme"
+}
