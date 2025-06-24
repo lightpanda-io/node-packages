@@ -1,20 +1,33 @@
 {
-  "packageManager": "yarn@4.9.2",
   "name": "node-packages",
   "version": "1.0.0",
   "description": "Lightpanda's Packages for NPM",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "author": "Nicolas Rigaudiere <nicolas@tonalogic.io>",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/*"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lightpanda-io/node-packages.git"
   },
-  "author": "Nicolas Rigaudiere <nicolas@tonalogic.io>",
-  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/lightpanda-io/node-packages/issues"
   },
-  "homepage": "https://github.com/lightpanda-io/node-packages#readme"
+  "homepage": "https://github.com/lightpanda-io/node-packages#readme",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "TURBO_TELEMETRY_DISABLED=1 npx turbo@latest run dev --parallel --force",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  },
+  "engines": {
+    "node": "22.16",
+    "yarn": "4.9"
+  },
+  "packageManager": "yarn@4.9.2"
 }
