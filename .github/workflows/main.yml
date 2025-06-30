@@ -1,0 +1,70 @@
+name: Lightpanda NPM Packages
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+# Environment variables available to all jobs and steps in this workflow
+env:
+  NODE_VERSION: "22.16.0"
+
+jobs:
+  # Lint job
+  lint:
+      name: Lint (Biome)
+      runs-on: ubuntu-latest
+      timeout-minutes: 2
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        - name: Setup Node @ ${{ env.NODE_VERSION }}
+          uses: actions/setup-node@v1
+          with:
+            node-version: ${{ env.NODE_VERSION }}
+        - name: Install Node.js dependencies
+          run: yarn install --immutable
+          env:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+        - name: Lint
+          run: yarn lint
+  # Typecheck job
+  typecheck:
+      name: Typecheck (tsc)
+      runs-on: ubuntu-latest
+      timeout-minutes: 2
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        - name: Setup Node @ ${{ env.NODE_VERSION }}
+          uses: actions/setup-node@v1
+          with:
+            node-version: ${{ env.NODE_VERSION }}
+        - name: Install Node.js dependencies
+          run: yarn install --immutable
+          env:
+            YARN_ENABLE_IMMUTABLE_INSTALLS: false
+        - name: Lint
+          run: yarn typecheck
+  # Build job
+  build:
+    name: Build packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup Node @ ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install dependencies
+        run: yarn install --immutable
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - name: Build site
+        run: yarn build
