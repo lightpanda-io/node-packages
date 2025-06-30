@@ -13,3 +13,13 @@ export const validateUrl = (url: string): void => {
     throw new Error(`URL must use http or https protocol ${url}`)
   }
 }
+
+export const validatePort = (port: number): void => {
+  if (!port || typeof port !== 'number') {
+    throw new Error(`Port is required and must be a number ${port}`)
+  }
+
+  if (port <= 0) {
+    throw new Error(`Port should be a positive number ${port}`)
+  }
+}
