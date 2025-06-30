@@ -11,5 +11,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules, .yarn"]
+  "exclude": ["node_modules, .yarn", "dist"]
 }

@@ -4,8 +4,8 @@
   "description": "Lightpanda for Node.js",
   "main": "index.js",
   "scripts": {
-    "dev": "tsup src/index.ts --target node22 --dts --watch",
-    "build": "tsup src/index.ts --target node22 --minify terser --dts",
+    "dev": "tsup src/index.ts --target node22 --watch",
+    "build": "tsup src/index.ts --target node22 --minify terser && yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
     "lint": "biome ci . --diagnostic-level=error",
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
