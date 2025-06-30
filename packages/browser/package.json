@@ -4,7 +4,8 @@
   "description": "Lightpanda for Node.js",
   "main": "index.js",
   "scripts": {
-    "dev": "tsup src/index.ts --watch"
+    "lint": "biome ci . --diagnostic-level=error",
+    "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -20,5 +21,12 @@
   "bugs": {
     "url": "https://github.com/lightpanda-io/node-packages/issues"
   },
-  "homepage": "https://github.com/lightpanda-io/node-packages/tree/main#readme"
+  "homepage": "https://github.com/lightpanda-io/node-packages/tree/main#readme",
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "@types/node": "22.15.32",
+    "terser": "^5.43.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
 }
