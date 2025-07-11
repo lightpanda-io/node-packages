@@ -2,10 +2,12 @@
   "name": "@lightpanda/browser",
   "version": "0.0.1",
   "description": "Lightpanda for Node.js",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "dev": "tsup src/index.ts --target node22 --dts --watch",
-    "build": "tsup src/index.ts --target node22 --minify terser && yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
+    "dev": "tsup src/index.ts --target node22 --format cjs,esm --dts --watch",
+    "build": "tsup src/index.ts --target node22 --format cjs,esm --minify terser && yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
     "lint": "biome ci . --diagnostic-level=error",
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
