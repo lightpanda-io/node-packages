@@ -8,6 +8,7 @@
   "scripts": {
     "dev": "tsup src/index.ts --target node22 --format cjs,esm --dts --watch",
     "build": "tsup src/index.ts --target node22 --format cjs,esm --minify terser && yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
+    "postinstall": "npx tsup scripts/postinstall.ts --target node22 && node dist/postinstall.js",
     "lint": "biome ci . --diagnostic-level=error",
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
