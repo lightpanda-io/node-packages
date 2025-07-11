@@ -18,7 +18,10 @@ const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: a
   const file = createWriteStream(BINARY_NAME)
 
   https.get(url, res => {
-    if (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307) {
+    if (
+      res.headers.location &&
+      (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307)
+    ) {
       return get(res.headers.location, resolve, reject)
     }
 
