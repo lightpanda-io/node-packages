@@ -1,5 +1,5 @@
 {
-  "name": "node-packages",
+  "name": "@lightpanda/node-packages",
   "version": "1.0.0",
   "description": "Lightpanda's Packages for NPM",
   "main": "index.js",
@@ -20,9 +20,12 @@
     "build": "turbo run build",
     "dev": "TURBO_TELEMETRY_DISABLED=1 npx turbo@latest run dev --parallel --force",
     "lint": "turbo run lint",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "publish-packages": "turbo run build lint && changeset version && changeset publish"
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.5.1",
+    "@changesets/cli": "^2.29.5",
     "turbo": "^2.5.4"
   },
   "engines": {
