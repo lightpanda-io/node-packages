@@ -1,6 +1,6 @@
 {
   "name": "@lightpanda/browser",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Lightpanda for Node.js",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
