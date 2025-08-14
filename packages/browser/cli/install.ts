@@ -2,8 +2,9 @@ import { constants, chmodSync, createWriteStream } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
 
-const PATH = 'dist'
+const FOLDER = 'dist'
 const BINARY_NAME = 'lightpanda'
+const BINARY_PATH = `${FOLDER}/${BINARY_NAME}`
 const PLATFORMS = {
   darwin: {
     x64: 'x86_64-macos',
@@ -16,7 +17,7 @@ const PLATFORMS = {
 }
 
 const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: any) => void) => {
-  const file = createWriteStream(`${PATH}/${BINARY_NAME}`)
+  const file = createWriteStream(BINARY_PATH)
 
   https.get(url, res => {
     if (
@@ -49,7 +50,7 @@ const main = async () => {
       await downloadBinary(
         `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${path}`,
       )
-      chmodSync(BINARY_NAME, constants.S_IRWXU)
+      chmodSync(BINARY_PATH, constants.S_IRWXU)
       exit(0)
     } catch (e) {
       console.log('error', e)
