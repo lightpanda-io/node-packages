@@ -2,3 +2,4 @@ lightpanda
 src/*
 cli/*
 .turbo
+tsconfig.json
