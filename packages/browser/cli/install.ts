@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { constants, chmodSync, createWriteStream } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'

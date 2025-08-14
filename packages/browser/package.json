@@ -17,7 +17,7 @@
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
   "bin": {
-    "install": "./dist/cli/install.js"
+    "lightpanda": "./dist/cli/install.js"
   },
   "repository": {
     "type": "git",
