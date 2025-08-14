@@ -17,45 +17,45 @@ const PLATFORMS = {
   },
 }
 
-const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: any) => void) => {
-  const file = createWriteStream(BINARY_PATH)
-
-  https.get(url, res => {
-    if (
-      res.headers.location &&
-      (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307)
-    ) {
-      return get(res.headers.location, resolve, reject)
-    }
-
-    res
-      .pipe(file)
-      .on('finish', () => {
-        resolve()
-      })
-      .on('error', error => {
-        reject(error)
-      })
-  })
-}
-
-const downloadBinary = async (url: string) => {
-  return new Promise((resolve, reject) => get(url, resolve, reject))
-}
-
 /**
  * Download Lightpanda's binary
  * @returns {Promise<void>}
  */
-export const download = async (): Promise<void> => {
+export const download = async (binaryPath: string = BINARY_PATH): Promise<void> => {
   const path = PLATFORMS?.[platform]?.[arch]
+
+  const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: any) => void) => {
+    const file = createWriteStream(binaryPath)
+
+    https.get(url, res => {
+      if (
+        res.headers.location &&
+        (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307)
+      ) {
+        return get(res.headers.location, resolve, reject)
+      }
+
+      res
+        .pipe(file)
+        .on('finish', () => {
+          resolve()
+        })
+        .on('error', error => {
+          reject(error)
+        })
+    })
+  }
+
+  const downloadBinary = async (url: string) => {
+    return new Promise((resolve, reject) => get(url, resolve, reject))
+  }
 
   if (path) {
     try {
       await downloadBinary(
         `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${path}`,
       )
-      chmodSync(BINARY_PATH, constants.S_IRWXU)
+      chmodSync(binaryPath, constants.S_IRWXU)
       exit(0)
     } catch (e) {
       console.log('error', e)
