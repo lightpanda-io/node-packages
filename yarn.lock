@@ -616,6 +616,8 @@ __metadata:
     terser: "npm:^5.43.1"
     tsup: "npm:^8.5.0"
     typescript: "npm:^5.8.3"
+  bin:
+    install: ./dist/cli/install.js
   languageName: unknown
   linkType: soft
 
