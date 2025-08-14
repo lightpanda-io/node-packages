@@ -67,6 +67,14 @@ or
 ```bash
 pnpm add @lightpanda/browser
 ```
+
+## Upgrade browser
+
+At some point in time, you might want to upgrade Lightpanda browser to a more recent version. To do so, you can run the following command:
+```bash
+npx @lightpanda/browser
+```
+
 <!-- USAGE EXAMPLES -->
 
 ## Examples
