@@ -7,8 +7,8 @@
   "types": "./dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "dev": "tsup src/index.ts --target node22 --format cjs,esm --dts --watch",
-    "build:index": "tsup src/index.ts --target node22 --format cjs,esm --minify terser",
+    "dev": "tsup index.ts --target node22 --format cjs,esm --dts --watch",
+    "build:index": "tsup index.ts --target node22 --format cjs,esm --minify terser",
     "build:decl": "yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
     "build:cli": "tsup cli/install.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
     "build": "yarn build:index && yarn build:decl && yarn build:cli",
