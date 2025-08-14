@@ -13,7 +13,7 @@
     "build:cli": "tsup cli/install.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
     "build:postinstall": "tsup scripts/postinstall.ts --target node22 --format cjs,esm --minify terser -d dist/scripts",
     "build": "yarn build:index && yarn build:decl && yarn build:cli && yarn build:postinstall",
-    "postinstall": "node dist/scripts/postinstall.js",
+    "postinstall": "node dist/scripts/postinstall.js || true",
     "lint": "biome ci . --diagnostic-level=error",
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
