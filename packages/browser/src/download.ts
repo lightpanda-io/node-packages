@@ -52,10 +52,14 @@ export const download = async (binaryPath: string = BINARY_PATH): Promise<void> 
 
   if (path) {
     try {
+      console.info('⏳ Downloading latest version of Lightpanda browser…')
+
       await downloadBinary(
         `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${path}`,
       )
       chmodSync(binaryPath, constants.S_IRWXU)
+
+      console.info('✅ Download finished!')
       exit(0)
     } catch (e) {
       console.log('error', e)

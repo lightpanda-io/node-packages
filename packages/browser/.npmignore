@@ -1,5 +1,6 @@
 lightpanda
 src/*
 cli/*
+scripts/*
 .turbo
 tsconfig.json
