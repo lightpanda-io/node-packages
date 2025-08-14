@@ -2,6 +2,7 @@ import { constants, chmodSync, createWriteStream } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
 
+const PATH = 'dist'
 const BINARY_NAME = 'lightpanda'
 const PLATFORMS = {
   darwin: {
@@ -15,7 +16,7 @@ const PLATFORMS = {
 }
 
 const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: any) => void) => {
-  const file = createWriteStream(BINARY_NAME)
+  const file = createWriteStream(`${PATH}/${BINARY_NAME}`)
 
   https.get(url, res => {
     if (

@@ -5,12 +5,19 @@
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
+  "type": "module",
   "scripts": {
     "dev": "tsup src/index.ts --target node22 --format cjs,esm --dts --watch",
-    "build": "tsup src/index.ts --target node22 --format cjs,esm --minify terser && yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
-    "postinstall": "npx tsup scripts/postinstall.ts --target node22 && node dist/postinstall.js",
+    "build:index": "tsup src/index.ts --target node22 --format cjs,esm --minify terser",
+    "build:decl": "yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
+    "build:cli": "tsup cli/install.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
+    "build": "yarn build:index && yarn build:decl && yarn build:cli",
+    "postinstall": "node dist/cli/install.js",
     "lint": "biome ci . --diagnostic-level=error",
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
+  },
+  "bin": {
+    "install": "./dist/cli/install.js"
   },
   "repository": {
     "type": "git",
