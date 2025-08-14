@@ -99,6 +99,10 @@ const options: LightpandaServeOptions = {
 const proc = await lightpanda.serve(options)
 
 // Do your magic ✨
+
+proc.stdout.destroy()
+proc.stderr.destroy()
+proc.kill()
 ```
 
 ℹ️ _Lightpanda's CDP server can be used alongside projects like [Puppeteer](https://pptr.dev/) or [Playwright](https://playwright.dev/)._
