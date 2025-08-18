@@ -1,6 +1,10 @@
 import os from 'node:os'
 
-const BINARY_NAME = 'lightpanda'
+export const DEFAULT_CACHE_FOLDER = `${os.homedir()}/.cache/lightpanda-node`
+export const BINARY_NAME = 'lightpanda'
+
+export const USER_EXECUTABLE_PATH = process.env.LIGHTPANDA_EXECUTABLE_PATH
+export const DEFAULT_EXECUTABLE_PATH = `${DEFAULT_CACHE_FOLDER}/${BINARY_NAME}`
 
 /**
  * Validate a URL structure
@@ -40,7 +44,5 @@ export const validatePort = (port: number): void => {
  * Get executable path
  */
 export const getExecutablePath = () => {
-  return (
-    process.env.LIGHTPANDA_EXECUTABLE_PATH ?? `${os.homedir()}/.cache/lightpanda-node${BINARY_NAME}`
-  )
+  return USER_EXECUTABLE_PATH ?? DEFAULT_EXECUTABLE_PATH
 }

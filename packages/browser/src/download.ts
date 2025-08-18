@@ -1,7 +1,7 @@
-import { constants, chmodSync, createWriteStream } from 'node:fs'
+import { constants, chmodSync, createWriteStream, existsSync, mkdirSync } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
-import { getExecutablePath } from './utils'
+import { DEFAULT_CACHE_FOLDER, DEFAULT_EXECUTABLE_PATH, USER_EXECUTABLE_PATH } from './utils'
 
 const PLATFORMS = {
   darwin: {
@@ -20,10 +20,13 @@ const PLATFORMS = {
  */
 export const download = async (): Promise<void> => {
   const platformPath = PLATFORMS?.[platform]?.[arch]
-  const executablePath = getExecutablePath()
+
+  if (!existsSync(DEFAULT_CACHE_FOLDER)) {
+    mkdirSync(DEFAULT_CACHE_FOLDER, { recursive: true })
+  }
 
   const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: any) => void) => {
-    const file = createWriteStream(executablePath)
+    const file = createWriteStream(DEFAULT_EXECUTABLE_PATH)
 
     https.get(url, res => {
       if (
@@ -49,13 +52,18 @@ export const download = async (): Promise<void> => {
   }
 
   if (platformPath) {
+    if (USER_EXECUTABLE_PATH) {
+      console.info('$LIGHTPANDA_EXECUTABLE_PATH found, skipping binary download…')
+      exit(0)
+    }
+
     try {
       console.info('⏳ Downloading latest version of Lightpanda browser…')
 
       await downloadBinary(
         `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${platformPath}`,
       )
-      chmodSync(executablePath, constants.S_IRWXU)
+      chmodSync(DEFAULT_EXECUTABLE_PATH, constants.S_IRWXU)
 
       console.info('✅ Done!')
       exit(0)
