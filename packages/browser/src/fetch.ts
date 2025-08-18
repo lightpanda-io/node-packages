@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process'
-import { validateUrl } from './utils'
+import { getExecutablePath, validateUrl } from './utils'
 /**
  * @typedef LightpandaFetchOptions
  * @type {object}
@@ -33,6 +33,7 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
 
   return new Promise<Buffer | string>((resolve, reject) => {
     try {
+      const executablePath = getExecutablePath()
       const flags = [
         { flag: '--dump', condition: dump },
         { flag: '--insecure_disable_tls_host_verification', condition: disableHostVerification },
@@ -41,7 +42,7 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
         .map(f => (f.condition ? f.flag : ''))
         .join(' ')
 
-      const e = execSync(`./lightpanda fetch ${flags} ${url}`)
+      const e = execSync(`${executablePath} fetch ${flags} ${url}`)
 
       if (dump) {
         resolve(e.toString())

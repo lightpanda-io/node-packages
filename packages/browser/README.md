@@ -51,8 +51,13 @@ See [benchmark details](https://github.com/lightpanda-io/demo)._
 
 ## Getting Started
 
+### Configuration
+_Environment variables_
+- `LIGHTPANDA_EXECUTABLE_PATH` can be specified if you want to use your own version and avoid the binary from being installed on postinstall. The default folder is `~/.cache/lightpanda-node`
+
+
 ### Install
-_On installation, the binary corresponding to your platform will be automatically downloaded_
+_When installing the package, the binary corresponding to your platform will be automatically downloaded. If your OS is not supported, download will fail_
 
 ```bash
 yarn add @lightpanda/browser
@@ -72,7 +77,7 @@ pnpm add @lightpanda/browser
 
 At some point in time, you might want to upgrade Lightpanda browser to a more recent version. To do so, you can run the following command:
 ```bash
-npx @lightpanda/browser
+npx @lightpanda/browser upgrade
 ```
 
 <!-- USAGE EXAMPLES -->
