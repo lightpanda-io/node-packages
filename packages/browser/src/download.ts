@@ -1,10 +1,7 @@
 import { constants, chmodSync, createWriteStream } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
-
-const FOLDER = 'dist'
-const BINARY_NAME = 'lightpanda'
-const BINARY_PATH = `${FOLDER}/${BINARY_NAME}`
+import { getExecutablePath } from './utils'
 
 const PLATFORMS = {
   darwin: {
@@ -21,11 +18,12 @@ const PLATFORMS = {
  * Download Lightpanda's binary
  * @returns {Promise<void>}
  */
-export const download = async (binaryPath: string = BINARY_PATH): Promise<void> => {
-  const path = PLATFORMS?.[platform]?.[arch]
+export const download = async (): Promise<void> => {
+  const platformPath = PLATFORMS?.[platform]?.[arch]
+  const executablePath = getExecutablePath()
 
   const get = (url: string, resolve: (value?: unknown) => void, reject: (reason: any) => void) => {
-    const file = createWriteStream(binaryPath)
+    const file = createWriteStream(executablePath)
 
     https.get(url, res => {
       if (
@@ -50,20 +48,20 @@ export const download = async (binaryPath: string = BINARY_PATH): Promise<void> 
     return new Promise((resolve, reject) => get(url, resolve, reject))
   }
 
-  if (path) {
+  if (platformPath) {
     try {
       console.info('⏳ Downloading latest version of Lightpanda browser…')
 
       await downloadBinary(
-        `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${path}`,
+        `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${platformPath}`,
       )
-      chmodSync(binaryPath, constants.S_IRWXU)
+      chmodSync(executablePath, constants.S_IRWXU)
 
-      console.info('✅ Download finished!')
+      console.info('✅ Done!')
       exit(0)
     } catch (e) {
       console.log('error', e)
-      console.warn(`Lightpanda's failed to download the binary file "${path}".`)
+      console.warn(`Lightpanda's failed to download the binary file "${platformPath}".`)
       exit(1)
     }
   } else {

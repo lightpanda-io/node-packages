@@ -3,7 +3,6 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-import packageJson from '../package.json' with { type: 'json' }
 import { download } from '../src/download'
 
 yargs(hideBin(process.argv))
@@ -12,7 +11,7 @@ yargs(hideBin(process.argv))
     'Upgrade the browser to the latest nightly version',
     () => {},
     _ => {
-      download(`node_modules/${packageJson.name}/dist/lightpanda`)
+      download()
     },
   )
   .command(
@@ -20,7 +19,7 @@ yargs(hideBin(process.argv))
     'Default',
     () => {},
     _ => {
-      console.info('Please enter a command')
+      console.info('ℹ️ Please enter a command')
     },
   )
   .option('verbose', {

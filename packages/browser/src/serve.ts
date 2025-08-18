@@ -1,5 +1,5 @@
 import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
-import { validatePort, validateUrl } from './utils'
+import { getExecutablePath, validatePort, validateUrl } from './utils'
 /**
  * @typedef LightpandaServeOptions
  * @type {object}
@@ -38,6 +38,7 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
   }
 
   return new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
+    const executablePath = getExecutablePath()
     const flags = [
       { flag: '--host', value: host },
       { flag: '--port', value: port },
@@ -52,7 +53,7 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
       .flatMap(f => (f.value ? [f.flag, !f.flagOnly ? f.value.toString() : ''] : ''))
       .filter(f => f !== '')
 
-    const process = spawn('./lightpanda', ['serve', ...flags])
+    const process = spawn(executablePath, ['serve', ...flags])
 
     process.on('spawn', async () => {
       console.info("🐼 Running Lightpanda's CDP server…", {
