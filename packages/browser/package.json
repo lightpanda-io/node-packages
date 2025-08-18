@@ -10,7 +10,7 @@
     "dev": "tsup index.ts --target node22 --format cjs,esm --dts --watch",
     "build:index": "tsup index.ts --target node22 --format cjs,esm --minify terser",
     "build:decl": "yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
-    "build:cli": "tsup cli/install.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
+    "build:cli": "tsup cli/main.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
     "build:postinstall": "tsup scripts/postinstall.ts --target node22 --format cjs,esm --minify terser -d dist/scripts",
     "build": "yarn build:index && yarn build:decl && yarn build:cli && yarn build:postinstall",
     "postinstall": "node dist/scripts/postinstall.js || true",
@@ -18,7 +18,7 @@
     "typecheck": "yarn dlx --package=typescript tsc --noEmit"
   },
   "bin": {
-    "lightpanda": "./dist/cli/install.js"
+    "lightpanda": "./dist/cli/main.js"
   },
   "repository": {
     "type": "git",
@@ -38,8 +38,12 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "22.15.32",
+    "@types/yargs": "^17.0.33",
     "terser": "^5.43.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "yargs": "^18.0.0"
   }
 }
