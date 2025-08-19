@@ -1,5 +1,11 @@
 # @lightpanda/browser
 
+## 1.0.1
+
+### Patch Changes
+
+- [`3059859`](https://github.com/lightpanda-io/node-packages/commit/3059859307ced46bb7868626f9644cad2444c093) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - Init package
+
 ## 1.0.0
 
 ### Major Changes
