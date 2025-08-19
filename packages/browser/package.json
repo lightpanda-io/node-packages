@@ -34,7 +34,7 @@
   "bugs": {
     "url": "https://github.com/lightpanda-io/node-packages/issues"
   },
-  "homepage": "https://github.com/lightpanda-io/node-packages/tree/main#readme",
+  "homepage": "https://github.com/lightpanda-io/node-packages/tree/main/packages/browser#readme",
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@types/node": "22.15.32",
