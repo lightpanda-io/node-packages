@@ -23,6 +23,7 @@ import { getExecutablePath, validatePort, validateUrl } from './utils'
  * @property {string} port - Port of the CDP server
  * @property {number} timeout - Inactivity timeout in seconds before disconnecting clients
  * @property {boolean} disableHostVerification - Disables host verification on all HTTP requests
+ * @property {boolean} obeyRobots - Fetches and obeys the robots.txt (if available) of the web pages we make requests towards.
  * @property {string} httpProxy - The HTTP proxy to use for all HTTP requests
  */
 export type LightpandaServeOptions = {
@@ -30,6 +31,7 @@ export type LightpandaServeOptions = {
   port?: number
   timeout?: number
   disableHostVerification?: boolean
+  obeyRobots?: boolean
   httpProxy?: string
 }
 
@@ -44,7 +46,7 @@ const defaultOptions: LightpandaServeOptions = {
  * @returns {Promise<ChildProcessWithoutNullStreams>}
  */
 export const serve = (options: LightpandaServeOptions = defaultOptions) => {
-  const { host, port, timeout, disableHostVerification, httpProxy } = options
+  const { host, port, timeout, disableHostVerification, obeyRobots, httpProxy } = options
 
   if (port) {
     validatePort(port)
@@ -62,6 +64,11 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
       {
         flag: '--insecure_disable_tls_host_verification',
         value: disableHostVerification,
+        flagOnly: true,
+      },
+      {
+        flag: '--obey_robots',
+        value: obeyRobots,
         flagOnly: true,
       },
       { flag: '--http_proxy', value: httpProxy },
