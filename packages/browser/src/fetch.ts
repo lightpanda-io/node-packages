@@ -21,11 +21,13 @@ import { getExecutablePath, validateUrl } from './utils'
  * @type {object}
  * @property {boolean} dump - Export fetched output as string
  * @property {boolean} disableHostVerification - Disables host verification on all HTTP requests
+ * @property {boolean} obeyRobots - Fetches and obeys the robots.txt (if available) of the web pages we make requests towards.
  * @property {string} httpProxy - The HTTP proxy to use for all HTTP requests
  */
 export type LightpandaFetchOptions = {
   dump?: boolean
   disableHostVerification?: boolean
+  obeyRobots?: boolean
   httpProxy?: string
 }
 
@@ -40,7 +42,7 @@ const defaultOptions: LightpandaFetchOptions = {
  * @returns {Promise<Buffer | string>}
  */
 export const fetch = (url: string, options: LightpandaFetchOptions = defaultOptions) => {
-  const { dump, disableHostVerification, httpProxy } = options
+  const { dump, disableHostVerification, obeyRobots, httpProxy } = options
   validateUrl(url)
 
   if (httpProxy) {
@@ -53,6 +55,7 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
       const flags = [
         { flag: '--dump', condition: dump },
         { flag: '--insecure_disable_tls_host_verification', condition: disableHostVerification },
+        { flag: '--obey_robots', condition: obeyRobots },
         { flag: `--http_proxy ${httpProxy}`, condition: httpProxy },
       ]
         .map(f => (f.condition ? f.flag : ''))
