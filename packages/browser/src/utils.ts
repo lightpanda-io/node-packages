@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import crypto from 'node:crypto'
+import fs from 'node:fs'
 import os from 'node:os'
 
 export const DEFAULT_CACHE_FOLDER = `${os.homedir()}/.cache/lightpanda-node`
@@ -60,4 +63,30 @@ export const validatePort = (port: number): void => {
  */
 export const getExecutablePath = () => {
   return USER_EXECUTABLE_PATH ?? DEFAULT_EXECUTABLE_PATH
+}
+
+/**
+ * Get checksum from file
+ */
+export const checksumFile = (filePath: string) => {
+  return new Promise((resolve, reject) => {
+    fs.stat(filePath, (err, stat) => {
+      if (!err && !stat.isFile()) {
+        throw new Error('Not a file')
+      }
+
+      if (err) {
+        reject(err)
+      }
+
+      const hash = crypto.createHash('sha256')
+      const fileStream = fs.createReadStream(filePath)
+
+      hash.setEncoding('hex')
+      fileStream.pipe(hash, { end: false }).on('end', () => {
+        hash.end()
+        resolve(hash.read())
+      })
+    })
+  })
 }
