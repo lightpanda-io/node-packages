@@ -24,6 +24,9 @@ export const BINARY_NAME = 'lightpanda'
 export const USER_EXECUTABLE_PATH = process.env.LIGHTPANDA_EXECUTABLE_PATH
 export const DEFAULT_EXECUTABLE_PATH = `${DEFAULT_CACHE_FOLDER}/${BINARY_NAME}`
 
+export const GITHUB_RELEASE_DATA_URL =
+  'https://api.github.com/repos/lightpanda-io/browser/releases/tags/nightly'
+
 /**
  * Validate a URL structure
  * @param {string} url URL to validate

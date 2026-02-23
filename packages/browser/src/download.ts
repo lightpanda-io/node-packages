@@ -19,6 +19,7 @@ import { arch, exit, platform } from 'node:process'
 import {
   DEFAULT_CACHE_FOLDER,
   DEFAULT_EXECUTABLE_PATH,
+  GITHUB_RELEASE_DATA_URL,
   USER_EXECUTABLE_PATH,
   checksumFile,
 } from './utils'
@@ -108,9 +109,7 @@ export const download = async (): Promise<void> => {
       )
 
       console.info('🔐 Getting and comparing checksums…', '\n')
-      const ghChecksum = await getGithubHash(
-        'https://api.github.com/repos/lightpanda-io/browser/releases/tags/nightly',
-      )
+      const ghChecksum = await getGithubHash(GITHUB_RELEASE_DATA_URL)
       const lpChecksum = await checksumFile(DEFAULT_EXECUTABLE_PATH)
 
       if (ghChecksum !== lpChecksum) {
