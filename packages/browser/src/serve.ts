@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
-import { getExecutablePath, validatePort, validateUrl } from './utils'
+import { getExecutablePath, validatePort, validateUrl } from './utils.js'
 
 /**
  * @typedef LightpandaServeOptions

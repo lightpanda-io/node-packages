@@ -16,7 +16,7 @@
 import { constants, chmodSync, createWriteStream, existsSync, mkdirSync } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
-import { DEFAULT_CACHE_FOLDER, DEFAULT_EXECUTABLE_PATH, USER_EXECUTABLE_PATH } from './utils'
+import { DEFAULT_CACHE_FOLDER, DEFAULT_EXECUTABLE_PATH, USER_EXECUTABLE_PATH } from './utils.js'
 
 const PLATFORMS = {
   darwin: {

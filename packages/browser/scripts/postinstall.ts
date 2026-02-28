@@ -13,6 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { download } from './../src/download'
+import { download } from './../src/download.js'
 
 download()

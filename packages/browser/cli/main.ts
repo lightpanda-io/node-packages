@@ -18,7 +18,7 @@
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 
-import { download } from '../src/download'
+import { download } from '../src/download.js'
 
 yargs(hideBin(process.argv))
   .command(
