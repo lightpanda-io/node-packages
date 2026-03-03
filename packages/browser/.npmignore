@@ -3,4 +3,5 @@ src/*
 cli/*
 scripts/*
 .turbo
+index.ts
 tsconfig.json
