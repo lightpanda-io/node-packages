@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { execSync } from 'node:child_process'
-import { getExecutablePath, validateUrl } from './utils'
+import { getExecutablePath, validateUrl } from './utils.js'
 
 /**
  * @typedef LightpandaFetchOptions

@@ -22,7 +22,7 @@ import {
   GITHUB_RELEASE_DATA_URL,
   USER_EXECUTABLE_PATH,
   checksumFile,
-} from './utils'
+} from './utils.js'
 
 type GH_ASSET = {
   name: string

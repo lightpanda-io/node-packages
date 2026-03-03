@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { fetch } from './src/fetch'
-import { serve } from './src/serve'
+import { fetch } from './src/fetch.js'
+import { serve } from './src/serve.js'
 
-export { LightpandaFetchOptions } from './src/fetch'
-export { LightpandaServeOptions } from './src/serve'
+export { LightpandaFetchOptions } from './src/fetch.js'
+export { LightpandaServeOptions } from './src/serve.js'
 
 export const lightpanda = {
   fetch,
