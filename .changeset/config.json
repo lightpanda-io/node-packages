@@ -1,10 +1,19 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "lightpanda-io/node-packages" }],
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "lightpanda-io/node-packages"
+    }
+  ],
   "commit": true,
-  "fixed": [["@lightpanda/browser"]],
+  "fixed": [
+    [
+      "@lightpanda/browser"
+    ]
+  ],
   "linked": [],
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": []

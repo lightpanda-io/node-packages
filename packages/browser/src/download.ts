@@ -16,7 +16,18 @@
 import { constants, chmodSync, createWriteStream, existsSync, mkdirSync } from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
-import { DEFAULT_CACHE_FOLDER, DEFAULT_EXECUTABLE_PATH, USER_EXECUTABLE_PATH } from './utils'
+import {
+  DEFAULT_CACHE_FOLDER,
+  DEFAULT_EXECUTABLE_PATH,
+  GITHUB_RELEASE_DATA_URL,
+  USER_EXECUTABLE_PATH,
+  checksumFile,
+} from './utils'
+
+type GH_ASSET = {
+  name: string
+  digest: string
+}
 
 const PLATFORMS = {
   darwin: {
@@ -66,6 +77,25 @@ export const download = async (): Promise<void> => {
     return new Promise((resolve, reject) => get(url, resolve, reject))
   }
 
+  const getGithubHash = async (path: string) => {
+    try {
+      const f = await fetch(path)
+      const data = await f.json()
+
+      const asset: GH_ASSET = data.assets.find(
+        (a: GH_ASSET) => a.name === `lightpanda-${platformPath}`,
+      )
+
+      if (asset) {
+        return asset.digest
+      }
+
+      return ''
+    } catch (e) {
+      throw new Error(e)
+    }
+  }
+
   if (platformPath) {
     if (USER_EXECUTABLE_PATH) {
       console.info('$LIGHTPANDA_EXECUTABLE_PATH found, skipping binary download…')
@@ -73,11 +103,19 @@ export const download = async (): Promise<void> => {
     }
 
     try {
-      console.info('⏳ Downloading latest version of Lightpanda browser…')
-
+      console.info('⏳ Downloading latest version of Lightpanda browser…', '\n')
       await downloadBinary(
         `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${platformPath}`,
       )
+
+      console.info('🔐 Getting and comparing checksums…', '\n')
+      const ghChecksum = await getGithubHash(GITHUB_RELEASE_DATA_URL)
+      const lpChecksum = await checksumFile(DEFAULT_EXECUTABLE_PATH)
+
+      if (ghChecksum !== lpChecksum) {
+        throw new Error("🚫 Checksums don't match!")
+      }
+
       chmodSync(DEFAULT_EXECUTABLE_PATH, constants.S_IRWXU)
 
       console.info('✅ Done!')

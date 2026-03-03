@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import crypto, { type BinaryToTextEncoding } from 'node:crypto'
+import fs from 'node:fs'
 import os from 'node:os'
 
 export const DEFAULT_CACHE_FOLDER = `${os.homedir()}/.cache/lightpanda-node`
@@ -20,6 +23,9 @@ export const BINARY_NAME = 'lightpanda'
 
 export const USER_EXECUTABLE_PATH = process.env.LIGHTPANDA_EXECUTABLE_PATH
 export const DEFAULT_EXECUTABLE_PATH = `${DEFAULT_CACHE_FOLDER}/${BINARY_NAME}`
+
+export const GITHUB_RELEASE_DATA_URL =
+  'https://api.github.com/repos/lightpanda-io/browser/releases/tags/nightly'
 
 /**
  * Validate a URL structure
@@ -60,4 +66,24 @@ export const validatePort = (port: number): void => {
  */
 export const getExecutablePath = () => {
   return USER_EXECUTABLE_PATH ?? DEFAULT_EXECUTABLE_PATH
+}
+
+/**
+ * Get checksum from file
+ */
+export const checksumFile = (
+  filePath: string,
+  algorithm = 'sha256',
+  encoding: BinaryToTextEncoding = 'hex',
+) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        reject(err)
+      }
+
+      const hash = crypto.createHash(algorithm).update(data).digest(encoding)
+      resolve(`${algorithm}:${hash}`)
+    })
+  })
 }
