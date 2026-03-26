@@ -62,16 +62,16 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
       { flag: '--port', value: port },
       { flag: '--timeout', value: timeout },
       {
-        flag: '--insecure_disable_tls_host_verification',
+        flag: '--insecure-disable-tls-host-verification',
         value: disableHostVerification,
         flagOnly: true,
       },
       {
-        flag: '--obey_robots',
+        flag: '--obey-robots',
         value: obeyRobots,
         flagOnly: true,
       },
-      { flag: '--http_proxy', value: httpProxy },
+      { flag: '--http-proxy', value: httpProxy },
     ]
       .flatMap(f => (f.value ? [f.flag, !f.flagOnly ? f.value.toString() : ''] : ''))
       .filter(f => f !== '')
