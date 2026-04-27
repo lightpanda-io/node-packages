@@ -76,10 +76,6 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
     const process = spawn(executablePath, ['serve', ...flags])
 
     process.on('spawn', async () => {
-      console.info("🐼 Running Lightpanda's CDP server…", {
-        pid: process.pid,
-      })
-
       await new Promise(resolve => setTimeout(resolve, 250))
       resolve(process)
     })
