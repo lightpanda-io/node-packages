@@ -1,5 +1,11 @@
 # @lightpanda/browser
 
+## 1.3.1
+
+### Patch Changes
+
+- [#15](https://github.com/lightpanda-io/node-packages/pull/15) [`feb331c`](https://github.com/lightpanda-io/node-packages/commit/feb331c9739abd9a1426a1d6c1ceb93f33d36d2f) Thanks [@regseb](https://github.com/regseb)! - Don't pollute the console with `"🐼 Running Lightpanda's CDP server…"` (#15)
+
 ## 1.3.0
 
 ### Minor Changes
