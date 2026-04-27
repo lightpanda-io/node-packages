@@ -53,14 +53,28 @@ See [benchmark details](https://github.com/lightpanda-io/demo)._
 
 This repository contains all the [NPM](https://npmjs.com) packages created for Lightpanda
 
+### Development mode
+
+```
+$ yarn dev
+```
+
+### Lint
+
+_using [Biome](https://biomejs.dev/)_
+
+```
+$ yarn lint
+```
+
 ### Build
 
 ```
 $ yarn build
 ```
 
-### Publish
-To publish packages, we use [changesets](https://github.com/changesets/changesets). Make sure to have commited & pushed all your code before publishing.
+## Publish
+To publish packages, we use [Changesets](https://github.com/changesets/changesets). Make sure to have committed & pushed all your code before publishing.
 
 1. Run the following command to create a new version (patch, minor, major)
 
@@ -68,10 +82,12 @@ To publish packages, we use [changesets](https://github.com/changesets/changeset
 $ yarn changeset add
 ```
 
-2. Publish all the packages
+2. Push Changeset commit to your branch
+
+3. Publish all the packages
 
 ```
 $ yarn publish-packages
 ```
 
-3. Push the new commits & merge to main
+4. Push release commits & merge to main
