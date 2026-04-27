@@ -1,5 +1,12 @@
 # @lightpanda/browser
 
+## 1.3.0
+
+### Minor Changes
+
+- [#16](https://github.com/lightpanda-io/node-packages/pull/16) [`2d43701`](https://github.com/lightpanda-io/node-packages/commit/2d437016575d9322ffd58cc98d0c67a00177cee5) Thanks [@krichprollsch](https://github.com/krichprollsch)! - - prefer dash for binary options (#14)
+  - --timeout is deprecated (#16)
+
 ## 1.2.0
 
 ### Minor Changes
