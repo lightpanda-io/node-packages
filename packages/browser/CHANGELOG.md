@@ -1,5 +1,19 @@
 # @lightpanda/browser
 
+## 1.2.0
+
+### Minor Changes
+
+- [#10](https://github.com/lightpanda-io/node-packages/pull/10) [`ce25927`](https://github.com/lightpanda-io/node-packages/commit/ce259272f68b60cfa3a4b63bc1d3b02e78ec545d) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - _Features_
+
+  - Feat/#9 Fetch dump markdown
+
+  _Chore_
+
+  - Checksum binary
+  - fix: add extension from import (#13)
+  - chore: not publish index.ts (#12)
+
 ## 1.1.0
 
 ### Minor Changes
