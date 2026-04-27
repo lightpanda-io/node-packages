@@ -1,5 +1,26 @@
 # @lightpanda/browser
 
+## 1.3.0
+
+### Minor Changes
+
+- [#16](https://github.com/lightpanda-io/node-packages/pull/16) [`2d43701`](https://github.com/lightpanda-io/node-packages/commit/2d437016575d9322ffd58cc98d0c67a00177cee5) Thanks [@krichprollsch](https://github.com/krichprollsch)! - - prefer dash for binary options (#14)
+  - --timeout is deprecated (#16)
+
+## 1.2.0
+
+### Minor Changes
+
+- [#10](https://github.com/lightpanda-io/node-packages/pull/10) [`ce25927`](https://github.com/lightpanda-io/node-packages/commit/ce259272f68b60cfa3a4b63bc1d3b02e78ec545d) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - _Features_
+
+  - Feat/#9 Fetch dump markdown
+
+  _Chore_
+
+  - Checksum binary
+  - fix: add extension from import (#13)
+  - chore: not publish index.ts (#12)
+
 ## 1.1.0
 
 ### Minor Changes
