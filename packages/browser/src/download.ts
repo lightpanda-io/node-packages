@@ -39,13 +39,19 @@ const PLATFORMS = {
     arm64: 'aarch64-linux',
   },
 }
+const CURRENT_PLATFORM = platform as 'darwin' | 'linux'
+const CURRENT_ARCH = arch as 'arm64' | 'x64'
 
 /**
  * Download Lightpanda's binary
  * @returns {Promise<void>}
  */
 export const download = async (): Promise<void> => {
-  const platformPath = PLATFORMS?.[platform]?.[arch]
+  if (!['linux', 'darwin'].includes(platform)) {
+    throw new Error('Architecture or platform is not compatible with Lightpanda')
+  }
+
+  const platformPath = PLATFORMS?.[CURRENT_PLATFORM]?.[CURRENT_ARCH]
 
   if (!existsSync(DEFAULT_CACHE_FOLDER)) {
     mkdirSync(DEFAULT_CACHE_FOLDER, { recursive: true })
@@ -91,7 +97,7 @@ export const download = async (): Promise<void> => {
       }
 
       return ''
-    } catch (e) {
+    } catch (e: any) {
       throw new Error(e)
     }
   }
