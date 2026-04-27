@@ -58,9 +58,9 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
       const executablePath = getExecutablePath()
       const flags = [
         { flag: `--dump ${dumpOptions?.type ?? 'html'}`, condition: dump },
-        { flag: '--insecure_disable_tls_host_verification', condition: disableHostVerification },
-        { flag: '--obey_robots', condition: obeyRobots },
-        { flag: `--http_proxy ${httpProxy}`, condition: httpProxy },
+        { flag: '--insecure-disable-tls-host-verification', condition: disableHostVerification },
+        { flag: '--obey-robots', condition: obeyRobots },
+        { flag: `--http-proxy ${httpProxy}`, condition: httpProxy },
       ]
         .map(f => (f.condition ? f.flag : ''))
         .join(' ')
