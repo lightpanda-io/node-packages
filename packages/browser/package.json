@@ -36,8 +36,8 @@
   },
   "homepage": "https://github.com/lightpanda-io/node-packages/tree/main/packages/browser#readme",
   "engines": {
-    "node": "22.16",
-    "yarn": "4.9"
+    "node": "22",
+    "yarn": "4"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
