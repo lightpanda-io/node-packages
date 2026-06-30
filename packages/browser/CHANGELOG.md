@@ -1,5 +1,11 @@
 # @lightpanda/browser
 
+## 1.3.2
+
+### Patch Changes
+
+- [`7ac5aac`](https://github.com/lightpanda-io/node-packages/commit/7ac5aac13d19e495557836aada343f2e0dc20bb4) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - chore: reduce node restrictions
+
 ## 1.3.1
 
 ### Patch Changes
