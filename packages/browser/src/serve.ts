@@ -23,6 +23,7 @@ import { getExecutablePath, validatePort, validateUrl } from './utils.js'
  * @property {string} port - Port of the CDP server
  * @property {boolean} disableHostVerification - Disables host verification on all HTTP requests
  * @property {boolean} obeyRobots - Fetches and obeys the robots.txt (if available) of the web pages we make requests towards.
+ * @property {boolean} enableExternalStylesheets - Fetch external <link rel=stylesheet> resources so their rules contribute to computed styles (and therefore to visibility checks like display, visibility, opacity, pointer-events). Defaults to false, except in agent mode with an LLM, where it is on.
  * @property {string} httpProxy - The HTTP proxy to use for all HTTP requests
  */
 export type LightpandaServeOptions = {
@@ -30,6 +31,7 @@ export type LightpandaServeOptions = {
   port?: number
   disableHostVerification?: boolean
   obeyRobots?: boolean
+  enableExternalStylesheets?: boolean
   httpProxy?: string
 }
 
@@ -44,7 +46,8 @@ const defaultOptions: LightpandaServeOptions = {
  * @returns {Promise<ChildProcessWithoutNullStreams>}
  */
 export const serve = (options: LightpandaServeOptions = defaultOptions) => {
-  const { host, port, disableHostVerification, obeyRobots, httpProxy } = options
+  const { host, port, disableHostVerification, obeyRobots, enableExternalStylesheets, httpProxy } =
+    options
 
   if (port) {
     validatePort(port)
@@ -66,6 +69,11 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
       {
         flag: '--obey-robots',
         value: obeyRobots,
+        flagOnly: true,
+      },
+      {
+        flag: '--enable-external-stylesheets',
+        value: enableExternalStylesheets,
         flagOnly: true,
       },
       { flag: '--http-proxy', value: httpProxy },
