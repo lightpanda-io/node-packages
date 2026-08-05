@@ -29,6 +29,7 @@ import { getExecutablePath, validateUrl } from './utils.js'
 export type LightpandaFetchOptions = {
   disableHostVerification?: boolean
   obeyRobots?: boolean
+  enableExternalStylesheets?: boolean
   httpProxy?: string
   dump?: boolean
   dumpOptions?: { type?: 'html' | 'markdown' }
@@ -46,7 +47,14 @@ const defaultOptions: LightpandaFetchOptions = {
  * @returns {Promise<Buffer | string>}
  */
 export const fetch = (url: string, options: LightpandaFetchOptions = defaultOptions) => {
-  const { dump, dumpOptions, disableHostVerification, obeyRobots, httpProxy } = options
+  const {
+    dump,
+    dumpOptions,
+    disableHostVerification,
+    obeyRobots,
+    enableExternalStylesheets,
+    httpProxy,
+  } = options
   validateUrl(url)
 
   if (httpProxy) {
@@ -60,6 +68,7 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
         { flag: `--dump ${dumpOptions?.type ?? 'html'}`, condition: dump },
         { flag: '--insecure-disable-tls-host-verification', condition: disableHostVerification },
         { flag: '--obey-robots', condition: obeyRobots },
+        { flag: '--enable-external-stylesheets', condition: enableExternalStylesheets },
         { flag: `--http-proxy ${httpProxy}`, condition: httpProxy },
       ]
         .map(f => (f.condition ? f.flag : ''))
