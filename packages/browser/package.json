@@ -9,13 +9,13 @@
   "scripts": {
     "dev": "tsup index.ts --target node22 --format cjs,esm --dts --watch",
     "build:index": "tsup index.ts --target node22 --format cjs,esm --minify terser",
-    "build:decl": "yarn dlx --package=typescript tsc --emitDeclarationOnly --declaration",
+    "build:decl": "npx tsc --emitDeclarationOnly --declaration",
     "build:cli": "tsup cli/main.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
     "build:postinstall": "tsup scripts/postinstall.ts --target node22 --format cjs,esm --minify terser -d dist/scripts",
     "build": "yarn build:index && yarn build:decl && yarn build:cli && yarn build:postinstall",
     "postinstall": "node dist/scripts/postinstall.js || true",
     "lint": "biome ci . --diagnostic-level=error",
-    "typecheck": "yarn dlx --package=typescript tsc --noEmit"
+    "typecheck": "npx tsc --noEmit"
   },
   "bin": {
     "lightpanda": "./dist/cli/main.js"
