@@ -1,5 +1,11 @@
 # @lightpanda/browser
 
+## 1.4.0
+
+### Minor Changes
+
+- [#24](https://github.com/lightpanda-io/node-packages/pull/24) [`3465bd7`](https://github.com/lightpanda-io/node-packages/commit/3465bd74d473ff8ce0ea65263c580f20b9ae27be) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - Feat/#23 Option external stylesheets
+
 ## 1.3.2
 
 ### Patch Changes
