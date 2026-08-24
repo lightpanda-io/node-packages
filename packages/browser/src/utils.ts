@@ -65,7 +65,23 @@ export const validatePort = (port: number): void => {
  * Get executable path
  */
 export const getExecutablePath = () => {
-  return USER_EXECUTABLE_PATH ?? DEFAULT_EXECUTABLE_PATH
+  if (USER_EXECUTABLE_PATH) {
+    if (fs.existsSync(USER_EXECUTABLE_PATH)) {
+      return USER_EXECUTABLE_PATH
+    }
+
+    throw process.emitWarning(
+      '⚠️ Lightpanda binary not found, please check your $LIGHTPANDA_EXECUTABLE_PATH environment variable.',
+    )
+  }
+
+  if (fs.existsSync(DEFAULT_EXECUTABLE_PATH)) {
+    return DEFAULT_EXECUTABLE_PATH
+  }
+
+  throw process.emitWarning(
+    '⚠️ Lightpanda binary not installed, please run `npx @lightpanda/browser install`',
+  )
 }
 
 /**
