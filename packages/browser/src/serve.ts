@@ -57,36 +57,42 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
   }
 
   return new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
-    const executablePath = getExecutablePath()
-    const flags = [
-      { flag: '--host', value: host },
-      { flag: '--port', value: port },
-      {
-        flag: '--insecure-disable-tls-host-verification',
-        value: disableHostVerification,
-        flagOnly: true,
-      },
-      {
-        flag: '--obey-robots',
-        value: obeyRobots,
-        flagOnly: true,
-      },
-      {
-        flag: '--enable-external-stylesheets',
-        value: enableExternalStylesheets,
-        flagOnly: true,
-      },
-      { flag: '--http-proxy', value: httpProxy },
-    ]
-      .flatMap(f => (f.value ? [f.flag, !f.flagOnly ? f.value.toString() : ''] : ''))
-      .filter(f => f !== '')
+    try {
+      const executablePath = getExecutablePath()
 
-    const process = spawn(executablePath, ['serve', ...flags])
+      const flags = [
+        { flag: '--host', value: host },
+        { flag: '--port', value: port },
+        {
+          flag: '--insecure-disable-tls-host-verification',
+          value: disableHostVerification,
+          flagOnly: true,
+        },
+        {
+          flag: '--obey-robots',
+          value: obeyRobots,
+          flagOnly: true,
+        },
+        {
+          flag: '--enable-external-stylesheets',
+          value: enableExternalStylesheets,
+          flagOnly: true,
+        },
+        { flag: '--http-proxy', value: httpProxy },
+      ]
+        .flatMap(f => (f.value ? [f.flag, !f.flagOnly ? f.value.toString() : ''] : ''))
+        .filter(f => f !== '')
 
-    process.on('spawn', async () => {
-      await new Promise(resolve => setTimeout(resolve, 250))
-      resolve(process)
-    })
-    process.on('error', e => reject(e))
+      const process = spawn(executablePath, ['serve', ...flags])
+
+      process.on('spawn', async () => {
+        await new Promise(resolve => setTimeout(resolve, 250))
+        resolve(process)
+      })
+      process.on('error', e => reject(e))
+    } catch (e) {
+      console.error(e)
+      reject(e)
+    }
   })
 }

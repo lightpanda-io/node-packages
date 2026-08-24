@@ -81,8 +81,9 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
       }
 
       resolve(e)
-    } catch (error) {
-      reject(error)
+    } catch (e) {
+      console.error(e)
+      reject(e)
     }
   })
 }

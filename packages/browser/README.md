@@ -53,7 +53,7 @@ See [benchmark details](https://github.com/lightpanda-io/demo)._
 
 ### Configuration
 _Environment variables_
-- `LIGHTPANDA_EXECUTABLE_PATH` can be specified if you want to use your own version and avoid the binary from being installed on postinstall. The default folder is `~/.cache/lightpanda-node`
+- `LIGHTPANDA_EXECUTABLE_PATH` can be specified if you want to use your own version (browser install command can be skipped). The default folder is `~/.cache/lightpanda-node`
 
 
 ### Install
