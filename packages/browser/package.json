@@ -11,7 +11,7 @@
     "build:index": "tsup index.ts --target node22 --format cjs,esm --minify terser",
     "build:decl": "npx tsc --emitDeclarationOnly --declaration",
     "build:cli": "tsup cli/main.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
-    "build": "yarn build:index && yarn build:decl && yarn build:cli && yarn build:postinstall",
+    "build": "yarn build:index && yarn build:decl && yarn build:cli",
     "lint": "biome ci . --diagnostic-level=error",
     "typecheck": "npx tsc --noEmit"
   },
