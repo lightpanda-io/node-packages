@@ -60,17 +60,17 @@ _Environment variables_
 _When installing the package, the binary corresponding to your platform will be automatically downloaded. If your OS is not supported, download will fail_
 
 ```bash
-yarn add @lightpanda/browser
+yarn add @lightpanda/browser && npx @lightpanda/browser install
 ```
 or
 
 ```bash
-npm install @lightpanda/browser
+npm install @lightpanda/browser && npx @lightpanda/browser install
 ```
 or
 
 ```bash
-pnpm add @lightpanda/browser
+pnpm add @lightpanda/browser && npx @lightpanda/browser install
 ```
 
 ## Upgrade browser

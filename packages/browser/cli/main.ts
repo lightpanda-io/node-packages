@@ -30,6 +30,14 @@ yargs(hideBin(process.argv))
     },
   )
   .command(
+    'install',
+    'Download the browser to the latest nightly version',
+    () => {},
+    _ => {
+      download()
+    },
+  )
+  .command(
     '$0',
     'Default',
     () => {},
