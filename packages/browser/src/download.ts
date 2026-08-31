@@ -19,9 +19,9 @@ import { arch, exit, platform } from 'node:process'
 import {
   DEFAULT_CACHE_FOLDER,
   DEFAULT_EXECUTABLE_PATH,
-  GITHUB_RELEASE_DATA_URL,
   USER_EXECUTABLE_PATH,
   checksumFile,
+  getBinaryAttributes,
 } from './utils.js'
 
 type GH_ASSET = {
@@ -46,12 +46,17 @@ const CURRENT_ARCH = arch as 'arm64' | 'x64'
  * Download Lightpanda's binary
  * @returns {Promise<void>}
  */
-export const download = async (): Promise<void> => {
+export const download = async (version: 'nightly' | string = 'nightly'): Promise<void> => {
   if (!['linux', 'darwin'].includes(platform)) {
     throw new Error('Architecture or platform is not compatible with Lightpanda')
   }
 
-  const platformPath = PLATFORMS?.[CURRENT_PLATFORM]?.[CURRENT_ARCH]
+  const platformArch = PLATFORMS?.[CURRENT_PLATFORM]?.[CURRENT_ARCH]
+  if (!platformArch) {
+    console.warn("Lightpanda package doesn't ship with prebuilt binaries for your platform yet. ")
+    exit(1)
+  }
+  const binaryAttributes = await getBinaryAttributes(version, platformArch)
 
   if (!existsSync(DEFAULT_CACHE_FOLDER)) {
     mkdirSync(DEFAULT_CACHE_FOLDER, { recursive: true })
@@ -83,56 +88,30 @@ export const download = async (): Promise<void> => {
     return new Promise((resolve, reject) => get(url, resolve, reject))
   }
 
-  const getGithubHash = async (path: string) => {
-    try {
-      const f = await fetch(path)
-      const data = await f.json()
-
-      const asset: GH_ASSET = data.assets.find(
-        (a: GH_ASSET) => a.name === `lightpanda-${platformPath}`,
-      )
-
-      if (asset) {
-        return asset.digest
-      }
-
-      return ''
-    } catch (e: any) {
-      throw new Error(e)
-    }
+  if (USER_EXECUTABLE_PATH) {
+    console.info('$LIGHTPANDA_EXECUTABLE_PATH found, skipping binary download…')
+    exit(0)
   }
 
-  if (platformPath) {
-    if (USER_EXECUTABLE_PATH) {
-      console.info('$LIGHTPANDA_EXECUTABLE_PATH found, skipping binary download…')
-      exit(0)
+  try {
+    console.info(`⏳ Downloading version ${binaryAttributes.version} of Lightpanda browser…`, '\n')
+    await downloadBinary(binaryAttributes.url)
+
+    console.info('🔐 Getting and comparing checksums…', '\n')
+    const ghChecksum = binaryAttributes.checksum
+    const lpChecksum = await checksumFile(DEFAULT_EXECUTABLE_PATH)
+
+    if (ghChecksum !== lpChecksum) {
+      throw new Error("🚫 Checksums don't match!")
     }
 
-    try {
-      console.info('⏳ Downloading latest version of Lightpanda browser…', '\n')
-      await downloadBinary(
-        `https://github.com/lightpanda-io/browser/releases/download/nightly/lightpanda-${platformPath}`,
-      )
+    chmodSync(DEFAULT_EXECUTABLE_PATH, constants.S_IRWXU)
 
-      console.info('🔐 Getting and comparing checksums…', '\n')
-      const ghChecksum = await getGithubHash(GITHUB_RELEASE_DATA_URL)
-      const lpChecksum = await checksumFile(DEFAULT_EXECUTABLE_PATH)
-
-      if (ghChecksum !== lpChecksum) {
-        throw new Error("🚫 Checksums don't match!")
-      }
-
-      chmodSync(DEFAULT_EXECUTABLE_PATH, constants.S_IRWXU)
-
-      console.info('✅ Done!')
-      exit(0)
-    } catch (e) {
-      console.log('error', e)
-      console.warn(`Lightpanda's failed to download the binary file "${platformPath}".`)
-      exit(1)
-    }
-  } else {
-    console.warn("Lightpanda package doesn't ship with prebuilt binaries for your platform yet. ")
+    console.info('✅ Done!')
+    exit(0)
+  } catch (e) {
+    console.log(e)
+    console.warn(`Lightpanda's failed to download the binary file for "${platformArch}".`)
     exit(1)
   }
 }

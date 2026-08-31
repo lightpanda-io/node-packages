@@ -30,11 +30,14 @@ yargs(hideBin(process.argv))
     },
   )
   .command(
-    'install',
+    'install [lp_version]',
     'Download the browser to the latest nightly version',
-    () => {},
-    _ => {
-      download()
+    yargs =>
+      yargs.positional('lp_version', {
+        describe: 'Version of the binary',
+      }),
+    argv => {
+      download(argv.lp_version as string)
     },
   )
   .command(
