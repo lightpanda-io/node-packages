@@ -1,5 +1,11 @@
 # @lightpanda/browser
 
+## 1.6.0
+
+### Minor Changes
+
+- [#29](https://github.com/lightpanda-io/node-packages/pull/29) [`654f4e3`](https://github.com/lightpanda-io/node-packages/commit/654f4e345e8960490d19c0aa4b8ea473db4f8fe5) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - - Feat/#28 Specific binary installation
+
 ## 1.5.0
 
 ### Minor Changes
