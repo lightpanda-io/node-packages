@@ -17,15 +17,15 @@
 import crypto, { type BinaryToTextEncoding } from 'node:crypto'
 import fs from 'node:fs'
 import os from 'node:os'
+import { exit } from 'node:process'
+import type { VersionType } from './types.js'
 
 export const DEFAULT_CACHE_FOLDER = `${os.homedir()}/.cache/lightpanda-node`
 export const BINARY_NAME = 'lightpanda'
 
 export const USER_EXECUTABLE_PATH = process.env.LIGHTPANDA_EXECUTABLE_PATH
 export const DEFAULT_EXECUTABLE_PATH = `${DEFAULT_CACHE_FOLDER}/${BINARY_NAME}`
-
-export const GITHUB_RELEASE_DATA_URL =
-  'https://api.github.com/repos/lightpanda-io/browser/releases/tags/nightly'
+export const VERSIONS_PATH = 'https://get.lightpanda.io/versions.json'
 
 /**
  * Validate a URL structure
@@ -70,18 +70,39 @@ export const getExecutablePath = () => {
       return USER_EXECUTABLE_PATH
     }
 
-    throw process.emitWarning(
+    console.warn(
       '⚠️ Lightpanda binary not found, please check your $LIGHTPANDA_EXECUTABLE_PATH environment variable.',
     )
+    exit(1)
   }
 
   if (fs.existsSync(DEFAULT_EXECUTABLE_PATH)) {
     return DEFAULT_EXECUTABLE_PATH
   }
 
-  throw process.emitWarning(
-    '⚠️ Lightpanda binary not installed, please run `npx @lightpanda/browser install`',
+  console.warn(
+    '⚠️ Lightpanda binary not installed, please run `npx @lightpanda/browser install <version>`',
   )
+  exit(1)
+}
+
+/**
+ * Get binary download path
+ */
+export const getBinaryAttributes = async (v: 'nightly' | string, platformArch: string) => {
+  const f = await fetch(VERSIONS_PATH)
+  const versionsList: VersionType = (await f.json()) as VersionType
+
+  if (versionsList?.[v]?.[platformArch]) {
+    return {
+      url: versionsList[v][platformArch].download_url,
+      checksum: `sha256:${versionsList[v][platformArch].shasum}`,
+      version: versionsList[v].version,
+    }
+  }
+
+  console.warn(`\x1b[33m⚠️ Provided version \`${v}\` not found\x1b[0m`)
+  exit(1)
 }
 
 /**
