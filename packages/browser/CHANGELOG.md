@@ -1,5 +1,14 @@
 # @lightpanda/browser
 
+## 1.5.0
+
+### Minor Changes
+
+- [#26](https://github.com/lightpanda-io/node-packages/pull/26) [`0521c82`](https://github.com/lightpanda-io/node-packages/commit/0521c82aa774bba6bd5d0b3b902d942200a633e7) Thanks [@nrigaudiere](https://github.com/nrigaudiere)! - **BREAKING CHANGE**
+
+  - Feat/#20 Do not download binary on installation
+    > [npm - Breaking changes for v12](https://github.blog/changelog/2026-06-09-upcoming-breaking-changes-for-npm-v12/)
+
 ## 1.4.0
 
 ### Minor Changes
