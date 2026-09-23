@@ -5,3 +5,7 @@ scripts/*
 .turbo
 index.ts
 tsconfig.json
+tsconfig.build.json
+test/*
+examples/*
+vitest.config.ts

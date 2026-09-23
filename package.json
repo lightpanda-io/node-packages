@@ -21,6 +21,7 @@
     "dev": "TURBO_TELEMETRY_DISABLED=1 npx turbo@latest run dev --parallel --force",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
     "publish-packages": "turbo run build lint && changeset version && changeset publish"
   },
   "devDependencies": {
