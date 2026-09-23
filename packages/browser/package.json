@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/lightpanda-io/node-packages/tree/main/packages/browser#readme",
   "engines": {
-    "node": "22",
+    "node": ">=22",
     "yarn": "4"
   },
   "devDependencies": {
