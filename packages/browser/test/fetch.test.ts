@@ -33,5 +33,5 @@ test('a failing binary rejects with ProcessError and its stderr', async () => {
   process.env.LP_FIXTURE_EXIT = '3'
   const err = await fetch('https://example.com').catch(e => e)
   expect(err).toBeInstanceOf(ProcessError)
-  expect(err.message).toMatch(/exited with code 3: boom/)
+  expect(err.message).toMatch(/failed \(exit 3\): boom/)
 })

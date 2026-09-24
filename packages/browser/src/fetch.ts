@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { spawn } from 'node:child_process'
 import { findBinary } from './binary.js'
-import { ProcessError } from './errors.js'
+import { runOnce } from './client.js'
 import { validateUrl } from './utils.js'
 
 /**
  * @typedef LightpandaFetchOptions
  * @type {object}
  * @property {boolean} dump - Export fetched output as string
- * @property {boolean} dumpHtml - Export fetched output as HTML
- * @property {boolean} dumpMarkdown - Export fetched output as Markdown
+ * @property {object} dumpOptions - `{ type: 'html' | 'markdown' }`, the dump format (html by default)
  * @property {boolean} disableHostVerification - Disables host verification on all HTTP requests
  * @property {boolean} obeyRobots - Fetches and obeys the robots.txt (if available) of the web pages we make requests towards.
  * @property {string} httpProxy - The HTTP proxy to use for all HTTP requests
@@ -71,46 +69,12 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
     ...(httpProxy ? ['--http-proxy', httpProxy] : []),
   ]
 
-  return new Promise<Buffer | string>((resolve, reject) => {
-    // A spawn error is followed by close, so only the first failure counts.
-    let failed = false
-    const fail = (e: unknown) => {
-      if (failed) return
-      failed = true
-      console.error(e)
-      reject(e)
-    }
-
-    let binary: string
-    try {
-      binary = findBinary()
-    } catch (e) {
-      return fail(e)
-    }
-
-    // No shell: the bundled binary's path may contain spaces. The output is
-    // collected in chunks, since a page dump can be larger than any buffer.
-    const child = spawn(binary, ['fetch', ...flags, url])
-    const stdout: Buffer[] = []
-    const stderr: Buffer[] = []
-    child.stdout.on('data', (chunk: Buffer) => stdout.push(chunk))
-    // Also written to our stderr, as execSync did.
-    child.stderr.on('data', (chunk: Buffer) => {
-      stderr.push(chunk)
-      process.stderr.write(chunk)
-    })
-
-    child.on('error', e =>
-      fail(new ProcessError(`lightpanda failed to start: ${e.message}`, { cause: e })),
-    )
-    child.on('close', (code, signal) => {
-      if (code !== 0) {
-        const reason = signal ? `was killed by ${signal}` : `exited with code ${code}`
-        const details = Buffer.concat(stderr).toString().trim()
-        return fail(new ProcessError(`lightpanda fetch ${reason}${details ? `: ${details}` : ''}`))
-      }
-      const output = Buffer.concat(stdout)
-      resolve(dump ? output.toString() : output)
-    })
+  const run = async () => {
+    const out = await runOnce(findBinary(), ['fetch', ...flags, url], { what: `fetch ${url}` })
+    return dump ? out.toString() : out
+  }
+  return run().catch(e => {
+    console.error(e)
+    throw e
   })
 }
