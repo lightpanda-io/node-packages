@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { execFileSync } from 'node:child_process'
 import { findBinary } from './binary.js'
+import { runOnce } from './client.js'
 import { validateUrl } from './utils.js'
 
 /**
  * @typedef LightpandaFetchOptions
  * @type {object}
  * @property {boolean} dump - Export fetched output as string
- * @property {boolean} dumpHtml - Export fetched output as HTML
- * @property {boolean} dumpMarkdown - Export fetched output as Markdown
+ * @property {object} dumpOptions - `{ type: 'html' | 'markdown' }`, the dump format (html by default)
  * @property {boolean} disableHostVerification - Disables host verification on all HTTP requests
  * @property {boolean} obeyRobots - Fetches and obeys the robots.txt (if available) of the web pages we make requests towards.
  * @property {string} httpProxy - The HTTP proxy to use for all HTTP requests
@@ -62,27 +61,20 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
     validateUrl(httpProxy)
   }
 
-  return new Promise<Buffer | string>((resolve, reject) => {
-    try {
-      const flags = [
-        ...(dump ? ['--dump', dumpOptions?.type ?? 'html'] : []),
-        ...(disableHostVerification ? ['--insecure-disable-tls-host-verification'] : []),
-        ...(obeyRobots ? ['--obey-robots'] : []),
-        ...(enableExternalStylesheets ? ['--enable-external-stylesheets'] : []),
-        ...(httpProxy ? ['--http-proxy', httpProxy] : []),
-      ]
+  const flags = [
+    ...(dump ? ['--dump', dumpOptions?.type ?? 'html'] : []),
+    ...(disableHostVerification ? ['--insecure-disable-tls-host-verification'] : []),
+    ...(obeyRobots ? ['--obey-robots'] : []),
+    ...(enableExternalStylesheets ? ['--enable-external-stylesheets'] : []),
+    ...(httpProxy ? ['--http-proxy', httpProxy] : []),
+  ]
 
-      // No shell: the bundled binary's path may contain spaces.
-      const e = execFileSync(findBinary(), ['fetch', ...flags, url])
-
-      if (dump) {
-        resolve(e.toString())
-      }
-
-      resolve(e)
-    } catch (e) {
-      console.error(e)
-      reject(e)
-    }
+  const run = async () => {
+    const out = await runOnce(findBinary(), ['fetch', ...flags, url], { what: `fetch ${url}` })
+    return dump ? out.toString() : out
+  }
+  return run().catch(e => {
+    console.error(e)
+    throw e
   })
 }

@@ -16,13 +16,39 @@
 import { fetch } from './src/fetch.js'
 import { serve } from './src/serve.js'
 
-export { LightpandaFetchOptions } from './src/fetch.js'
-export { LightpandaServeOptions } from './src/serve.js'
+export type { LightpandaFetchOptions } from './src/fetch.js'
+export type { LightpandaServeOptions } from './src/serve.js'
 
+/** The 1.x API: one-shot `fetch` and a CDP `serve` process. */
 export const lightpanda = {
   fetch,
   serve,
 }
 
-export { LightpandaError, ProcessError } from './src/errors.js'
+export { Browser, Session, runScript } from './src/browser.js'
+export { CDPServer, BiDiServer, ServeProcess } from './src/serve.js'
+export { dump } from './src/dump.js'
+export {
+  LightpandaError,
+  ProcessError,
+  ProtocolError,
+  RunError,
+  ScriptError,
+  ToolError,
+} from './src/errors.js'
+export type { RunErrorDetail } from './src/errors.js'
 export { findBinary, bundledBrowserVersion } from './src/binary.js'
+export type { BrowserFlags } from './src/flags.js'
+export type * from './src/methods.js'
+export type {
+  ChildOptions,
+  DumpBinaryFormat,
+  DumpFormat,
+  DumpOptions,
+  DumpTextFormat,
+  LaunchOptions,
+  ProcessOptions,
+  RunOptions,
+  ServeOptions,
+  ToolSpec,
+} from './src/types.js'
