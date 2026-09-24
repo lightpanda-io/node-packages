@@ -4,7 +4,8 @@
     "moduleResolution": "nodenext",
     "types": ["node"],
     "esModuleInterop": true,
-    "target": "es6",
+    "target": "es2022",
+    "lib": ["es2022", "esnext.disposable"],
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
@@ -17,5 +18,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules, .yarn", "dist"]
+  "exclude": ["node_modules", ".yarn", "dist"]
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2023-2025 Lightpanda (Selecy SAS)
+ * Copyright 2023-2026 Lightpanda (Selecy SAS)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { fetch } from './src/fetch.js'
-import { serve } from './src/serve.js'
 
-export { LightpandaFetchOptions } from './src/fetch.js'
-export { LightpandaServeOptions } from './src/serve.js'
-
-export const lightpanda = {
-  fetch,
-  serve,
+/** Base error of the package. */
+export class LightpandaError extends Error {
+  constructor(message: string, options?: ErrorOptions) {
+    super(message, options)
+    this.name = new.target.name
+  }
 }
 
-export { LightpandaError, ProcessError } from './src/errors.js'
-export { findBinary, bundledBrowserVersion } from './src/binary.js'
+/** The browser binary could not be found, started, or reached. */
+export class ProcessError extends LightpandaError {}

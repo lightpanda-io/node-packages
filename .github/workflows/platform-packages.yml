@@ -1,0 +1,202 @@
+name: Platform packages
+
+# Pack @lightpanda/browser and the @lightpanda/browser-<platform> packages with
+# the binaries of the pinned browser release, and test the install on each
+# platform. Dispatch with publish before releasing the @lightpanda/browser
+# version that pins them.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "publish the platform packages to npm (otherwise pack and test only)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+env:
+  BROWSER_REPO: lightpanda-io/browser
+  NODE_VERSION: "22.16.0"
+
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: |
+          corepack enable
+          yarn set version 4.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Read the pinned version
+        id: version
+        run: |
+          version=$(node -p "require('./npm/linux-x64/package.json').version")
+          for manifest in npm/*/package.json; do
+            test "$(node -p "require('./$manifest').version")" = "$version" || {
+              echo "::error::$manifest is not at $version"
+              exit 1
+            }
+          done
+          test "$(node -p "Object.values(require('./packages/browser/package.json').optionalDependencies).every(v => v === '$version')")" = true || {
+            echo "::error::packages/browser pins another version than $version"
+            exit 1
+          }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Download the release binaries
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for pair in linux-x64:x86_64-linux linux-arm64:aarch64-linux darwin-arm64:aarch64-macos darwin-x64:x86_64-macos; do
+            plat="${pair%%:*}"
+            asset="lightpanda-${pair##*:}"
+            gh release download "${{ steps.version.outputs.version }}" -R "$BROWSER_REPO" \
+              -p "$asset" -O "npm/$plat/lightpanda"
+            chmod +x "npm/$plat/lightpanda"
+          done
+          ./npm/linux-x64/lightpanda version
+
+      - name: Build @lightpanda/browser
+        run: |
+          yarn install --immutable
+          yarn build
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+      - name: Pack
+        run: |
+          mkdir tarballs
+          for dir in npm/*/ packages/browser/; do
+            npm pack "./$dir" --pack-destination tarballs
+          done
+          ls -la tarballs
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs/*.tgz
+
+  test:
+    needs: pack
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-latest
+            plat: linux-x64
+          - runner: ubuntu-24.04-arm
+            plat: linux-arm64
+          - runner: macos-14
+            plat: darwin-arm64
+          - runner: macos-15-intel
+            plat: darwin-x64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs
+
+      # Outside the checkout, so the workspace cannot shadow the install. Both
+      # tarballs in one install satisfy the exact optional dependency pin.
+      - name: Install the tarballs into a clean project
+        run: |
+          mkdir -p "$RUNNER_TEMP/pkgtest" && cd "$RUNNER_TEMP/pkgtest"
+          npm init -y >/dev/null && npm pkg set type=module
+          npm install "$GITHUB_WORKSPACE"/tarballs/lightpanda-browser-[0-9]*.tgz \
+            "$GITHUB_WORKSPACE"/tarballs/lightpanda-browser-${{ matrix.plat }}-*.tgz
+          cp "$GITHUB_WORKSPACE/packages/browser/test/smoke.mjs" .
+
+      - name: Smoke test
+        env:
+          LIGHTPANDA_BIN: ""
+        run: |
+          cd "$RUNNER_TEMP/pkgtest"
+          node smoke.mjs
+          node -e "console.log(require('@lightpanda/browser').bundledBrowserVersion())"
+
+  runtimes:
+    needs: pack
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs
+
+      - name: Install the tarballs into a clean project
+        run: |
+          mkdir -p "$RUNNER_TEMP/pkgtest" && cd "$RUNNER_TEMP/pkgtest"
+          npm init -y >/dev/null && npm pkg set type=module
+          npm install "$GITHUB_WORKSPACE"/tarballs/lightpanda-browser-[0-9]*.tgz \
+            "$GITHUB_WORKSPACE"/tarballs/lightpanda-browser-linux-x64-*.tgz
+          cp "$GITHUB_WORKSPACE/packages/browser/test/smoke.mjs" .
+
+      - name: Deno
+        run: cd "$RUNNER_TEMP/pkgtest" && deno run -A smoke.mjs
+
+      - name: Bun
+        run: cd "$RUNNER_TEMP/pkgtest" && bun smoke.mjs
+
+  publish:
+    needs: [test, runtimes]
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: npm
+    permissions:
+      id-token: write # npm trusted publishing and provenance
+      contents: read
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: https://registry.npmjs.org
+
+      # Provenance under trusted publishing needs npm >= 11.5.1.
+      - run: npm install -g npm@latest
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarballs
+          path: tarballs
+
+      # @lightpanda/browser itself is released with changesets.
+      - name: Publish
+        run: |
+          for tgz in tarballs/lightpanda-browser-linux-*.tgz tarballs/lightpanda-browser-darwin-*.tgz; do
+            npm publish "$tgz" --access public
+          done

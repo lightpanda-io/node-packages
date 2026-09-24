@@ -3,17 +3,31 @@
   "version": "1.6.0",
   "description": "Lightpanda for Node.js",
   "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json",
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "type": "module",
   "scripts": {
-    "dev": "tsup index.ts --target node22 --format cjs,esm --dts --watch",
-    "build:index": "tsup index.ts --target node22 --format cjs,esm --minify terser",
-    "build:decl": "npx tsc --emitDeclarationOnly --declaration",
+    "dev": "tsup index.ts --target node22 --format cjs,esm --shims --dts --watch",
+    "build:index": "tsup index.ts --target node22 --format cjs,esm --shims --minify terser",
+    "build:decl": "npx tsc -p tsconfig.build.json --emitDeclarationOnly --declaration",
     "build:cli": "tsup cli/main.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
     "build": "yarn build:index && yarn build:decl && yarn build:cli",
     "lint": "biome ci . --diagnostic-level=error",
-    "typecheck": "npx tsc --noEmit"
+    "typecheck": "npx tsc --noEmit",
+    "test": "vitest run"
   },
   "bin": {
     "lightpanda": "./dist/cli/main.js"
@@ -43,9 +57,16 @@
     "@types/yargs": "^17.0.35",
     "terser": "^5.46.0",
     "tsup": "^8.5.1",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.7"
   },
   "dependencies": {
     "yargs": "^18.0.0"
+  },
+  "optionalDependencies": {
+    "@lightpanda/browser-darwin-arm64": "0.4.1",
+    "@lightpanda/browser-darwin-x64": "0.4.1",
+    "@lightpanda/browser-linux-arm64": "0.4.1",
+    "@lightpanda/browser-linux-x64": "0.4.1"
   }
 }
