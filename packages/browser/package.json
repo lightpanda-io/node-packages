@@ -55,6 +55,7 @@
     "@biomejs/biome": "^1.9.4",
     "@types/node": "22.15.32",
     "@types/yargs": "^17.0.35",
+    "puppeteer-core": "^25.12.0",
     "terser": "^5.46.0",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",

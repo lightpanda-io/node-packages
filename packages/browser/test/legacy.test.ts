@@ -1,26 +1,21 @@
-// The 1.x API (`lightpanda.fetch`, `lightpanda.serve`) must keep behaving
-// exactly as before: same exports, same argv, same return types. The argv
-// checks run against a stand-in binary that echoes its arguments.
+// The 1.x API must keep its exports, argv and return types. The argv checks
+// run a stand-in binary that echoes its arguments.
 
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { beforeAll, describe, expect, test } from 'vitest'
+import * as mod from '../index.js'
+import { ECHO } from './helpers.js'
 
-const ECHO = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'echo-argv.mjs')
+const { lightpanda } = mod
 
-let lightpanda: typeof import('../index.js').lightpanda
-
-beforeAll(async () => {
-  // Read by the legacy lookup, which predates the `binary` option.
+beforeAll(() => {
+  // The legacy API predates the `binary` option.
   process.env.LIGHTPANDA_EXECUTABLE_PATH = ECHO
-  lightpanda = (await import('../index.js')).lightpanda
 })
 
 const argvOf = (out: Buffer | string) => JSON.parse(out.toString())
 
 describe('exports', () => {
-  test('the lightpanda object keeps fetch and serve', async () => {
-    const mod = await import('../index.js')
+  test('the lightpanda object keeps fetch and serve', () => {
     expect(Object.keys(mod)).toContain('lightpanda')
     expect(Object.keys(mod.lightpanda).sort()).toEqual(['fetch', 'serve'])
   })
