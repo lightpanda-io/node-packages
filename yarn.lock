@@ -804,18 +804,59 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@lightpanda/browser-darwin-arm64@portal:./npm/darwin-arm64::locator=%40lightpanda%2Fnode-packages%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@lightpanda/browser-darwin-arm64@portal:./npm/darwin-arm64::locator=%40lightpanda%2Fnode-packages%40workspace%3A."
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: soft
+
+"@lightpanda/browser-darwin-x64@portal:./npm/darwin-x64::locator=%40lightpanda%2Fnode-packages%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@lightpanda/browser-darwin-x64@portal:./npm/darwin-x64::locator=%40lightpanda%2Fnode-packages%40workspace%3A."
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: soft
+
+"@lightpanda/browser-linux-arm64@portal:./npm/linux-arm64::locator=%40lightpanda%2Fnode-packages%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@lightpanda/browser-linux-arm64@portal:./npm/linux-arm64::locator=%40lightpanda%2Fnode-packages%40workspace%3A."
+  conditions: os=linux & cpu=arm64 & libc=glibc
+  languageName: node
+  linkType: soft
+
+"@lightpanda/browser-linux-x64@portal:./npm/linux-x64::locator=%40lightpanda%2Fnode-packages%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@lightpanda/browser-linux-x64@portal:./npm/linux-x64::locator=%40lightpanda%2Fnode-packages%40workspace%3A."
+  conditions: os=linux & cpu=x64 & libc=glibc
+  languageName: node
+  linkType: soft
+
 "@lightpanda/browser@workspace:packages/browser":
   version: 0.0.0-use.local
   resolution: "@lightpanda/browser@workspace:packages/browser"
   dependencies:
     "@biomejs/biome": "npm:^1.9.4"
+    "@lightpanda/browser-darwin-arm64": "npm:0.4.1"
+    "@lightpanda/browser-darwin-x64": "npm:0.4.1"
+    "@lightpanda/browser-linux-arm64": "npm:0.4.1"
+    "@lightpanda/browser-linux-x64": "npm:0.4.1"
     "@types/node": "npm:22.15.32"
     "@types/yargs": "npm:^17.0.35"
     terser: "npm:^5.46.0"
     tsup: "npm:^8.5.1"
     typescript: "npm:^5.9.3"
-    vitest: "npm:^3"
+    vitest: "npm:^3.2.7"
     yargs: "npm:^18.0.0"
+  dependenciesMeta:
+    "@lightpanda/browser-darwin-arm64":
+      optional: true
+    "@lightpanda/browser-darwin-x64":
+      optional: true
+    "@lightpanda/browser-linux-arm64":
+      optional: true
+    "@lightpanda/browser-linux-x64":
+      optional: true
   bin:
     lightpanda: ./dist/cli/main.js
   languageName: unknown
@@ -3782,7 +3823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vitest@npm:^3":
+"vitest@npm:^3.2.7":
   version: 3.2.7
   resolution: "vitest@npm:3.2.7"
   dependencies:

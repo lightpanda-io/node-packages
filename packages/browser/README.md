@@ -51,34 +51,41 @@ See [benchmark details](https://github.com/lightpanda-io/demo)._
 
 ## Getting Started
 
-### Configuration
-_Environment variables_
-- `LIGHTPANDA_EXECUTABLE_PATH` can be specified if you want to use your own version (browser install command can be skipped). The default folder is `~/.cache/lightpanda-node`
-
-
 ### Install
-_When installing the package, the binary corresponding to your platform will be automatically downloaded. If your OS is not supported, download will fail_
 
 ```bash
-yarn add @lightpanda/browser && npx @lightpanda/browser install
+npm install @lightpanda/browser   # or: yarn add / pnpm add
 ```
-or
+
+The browser binary for your platform comes with the package, as an optional
+dependency (`@lightpanda/browser-linux-x64`, `-linux-arm64`, `-darwin-x64`,
+`-darwin-arm64`). Linux (glibc) and macOS on x64 and arm64 are supported.
+
+To run another browser version, download it with the CLI; an installed binary
+takes precedence over the bundled one:
 
 ```bash
-npm install @lightpanda/browser && npx @lightpanda/browser install
-```
-or
-
-```bash
-pnpm add @lightpanda/browser && npx @lightpanda/browser install
+npx @lightpanda/browser install [version]   # a release such as 0.4.1, nightly by default
+npx @lightpanda/browser upgrade             # the latest nightly
 ```
 
-## Upgrade browser
+### Configuration
 
-At some point in time, you might want to upgrade Lightpanda browser to a more recent version. To do so, you can run the following command:
-```bash
-npx @lightpanda/browser upgrade
-```
+_Environment variables_
+
+- `LIGHTPANDA_EXECUTABLE_PATH`: path to your own binary. It takes precedence
+  over everything else, and the `install` command is skipped when it is set.
+- `LIGHTPANDA_BIN`: path to a binary, checked after `LIGHTPANDA_EXECUTABLE_PATH`
+  (the variable `lightpanda-python` uses too).
+
+The binary is looked up in this order: `LIGHTPANDA_EXECUTABLE_PATH`,
+`LIGHTPANDA_BIN`, the one `install` put in `~/.cache/lightpanda-node`, the
+bundled platform package, then `PATH`. A binary a 1.x `install` left in
+`~/.cache/lightpanda-node` comes after the bundled one; run `install` again to
+put it first. `findBinary()` returns what that lookup finds, and
+`bundledBrowserVersion()` the bundled browser version.
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- USAGE EXAMPLES -->
 

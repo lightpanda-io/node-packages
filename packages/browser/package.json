@@ -14,10 +14,14 @@
     "./package.json": "./package.json",
     "./dist/*": "./dist/*"
   },
+  "files": [
+    "dist",
+    "CHANGELOG.md"
+  ],
   "type": "module",
   "scripts": {
-    "dev": "tsup index.ts --target node22 --format cjs,esm --dts --watch",
-    "build:index": "tsup index.ts --target node22 --format cjs,esm --minify terser",
+    "dev": "tsup index.ts --target node22 --format cjs,esm --shims --dts --watch",
+    "build:index": "tsup index.ts --target node22 --format cjs,esm --shims --minify terser",
     "build:decl": "npx tsc -p tsconfig.build.json --emitDeclarationOnly --declaration",
     "build:cli": "tsup cli/main.ts --target node22 --format cjs,esm --minify terser -d dist/cli",
     "build": "yarn build:index && yarn build:decl && yarn build:cli",
@@ -58,5 +62,11 @@
   },
   "dependencies": {
     "yargs": "^18.0.0"
+  },
+  "optionalDependencies": {
+    "@lightpanda/browser-darwin-arm64": "0.4.1",
+    "@lightpanda/browser-darwin-x64": "0.4.1",
+    "@lightpanda/browser-linux-arm64": "0.4.1",
+    "@lightpanda/browser-linux-x64": "0.4.1"
   }
 }

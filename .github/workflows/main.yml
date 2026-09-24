@@ -59,30 +59,9 @@ jobs:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
         - name: Lint
           run: yarn typecheck
-  # Build job
+  # Build and test job
   build:
-    name: Build packages
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Enable Corepack
-        run: |
-          corepack enable
-          yarn set version 4.9
-      - name: Setup Node @ ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Install dependencies
-        run: yarn install --immutable
-        env:
-          YARN_ENABLE_IMMUTABLE_INSTALLS: false
-      - name: Build all packages
-        run: yarn build
-  # Test job
-  test:
-    name: Test (vitest)
+    name: Build and test packages
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -96,15 +75,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      # The pinned release, where the workspace-linked platform package expects it.
+      - name: Download the pinned browser
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./npm/linux-x64/package.json').version")
+          gh release download "$version" -R lightpanda-io/browser \
+            -p lightpanda-x86_64-linux -O npm/linux-x64/lightpanda
+          chmod +x npm/linux-x64/lightpanda
       - name: Install dependencies
         run: yarn install --immutable
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - name: Build all packages
         run: yarn build
-      # Through the package's own CLI, so the suites use the binary an
-      # upgrading user already has in ~/.cache/lightpanda-node.
-      - name: Install the browser
-        run: node packages/browser/dist/cli/main.js install nightly
       - name: Test
         run: yarn test

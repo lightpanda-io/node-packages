@@ -31,7 +31,7 @@ yargs(hideBin(process.argv))
   )
   .command(
     'install [lp_version]',
-    'Download the browser to the latest nightly version',
+    'Download a browser version to ~/.cache/lightpanda-node (nightly by default)',
     yargs =>
       yargs.positional('lp_version', {
         describe: 'Version of the binary',
