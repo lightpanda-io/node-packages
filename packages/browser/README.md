@@ -108,7 +108,10 @@ import { type LightpandaServeOptions, lightpanda } from '@lightpanda/browser'
 const options: LightpandaServeOptions = {
   host: '127.0.0.1',
   port: 9222,
+  // Extra `lightpanda serve` flags, passed as is.
+  args: ['--load-resources', 'iframe'],
 }
+// Resolves once the server accepts connections.
 const proc = await lightpanda.serve(options)
 
 // Do your magic ✨
