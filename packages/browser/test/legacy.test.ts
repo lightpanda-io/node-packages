@@ -97,6 +97,16 @@ describe('lightpanda.serve', () => {
     ])
   })
 
+  test('passes args after the options', async () => {
+    expect(await argvOfServe({ port: 9334, args: ['--load-resources', 'iframe'] })).toEqual([
+      'serve',
+      '--port',
+      '9334',
+      '--load-resources',
+      'iframe',
+    ])
+  })
+
   test('resolves a child process with piped stdio', async () => {
     const proc = await lightpanda.serve()
     expect(proc.pid).toBeTypeOf('number')
