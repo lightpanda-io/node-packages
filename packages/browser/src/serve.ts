@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { type ChildProcessWithoutNullStreams, spawn } from 'node:child_process'
+import { once } from 'node:events'
 import { getExecutablePath, validatePort, validateUrl } from './utils.js'
 
 /**
@@ -25,6 +26,7 @@ import { getExecutablePath, validatePort, validateUrl } from './utils.js'
  * @property {boolean} obeyRobots - Fetches and obeys the robots.txt (if available) of the web pages we make requests towards.
  * @property {boolean} enableExternalStylesheets - Fetch external <link rel=stylesheet> resources so their rules contribute to computed styles (and therefore to visibility checks like display, visibility, opacity, pointer-events). Defaults to false, except in agent mode with an LLM, where it is on.
  * @property {string} httpProxy - The HTTP proxy to use for all HTTP requests
+ * @property {string[]} args - Extra `lightpanda serve` flags, passed verbatim after the options above (e.g. `['--load-resources', 'iframe']`)
  */
 export type LightpandaServeOptions = {
   host?: string
@@ -33,6 +35,7 @@ export type LightpandaServeOptions = {
   obeyRobots?: boolean
   enableExternalStylesheets?: boolean
   httpProxy?: string
+  args?: string[]
 }
 
 const defaultOptions: LightpandaServeOptions = {
@@ -40,14 +43,56 @@ const defaultOptions: LightpandaServeOptions = {
   port: 9222,
 }
 
+const READY_TIMEOUT_MS = 10_000
+const READY_POLL_MS = 100
+
+/**
+ * URL the server answers once it accepts CDP connections
+ * @param {string} host - Host the server listens on
+ * @param {number} port - Port the server listens on
+ */
+const versionUrl = (host = '127.0.0.1', port = 9222) => {
+  const h =
+    host === '0.0.0.0' || host === '::' ? '127.0.0.1' : host.includes(':') ? `[${host}]` : host
+  return `http://${h}:${port}/json/version`
+}
+
+/**
+ * Last lines Lightpanda wrote to stderr, for error messages. Stops the process
+ * and reads its stderr to the end.
+ * @param {ChildProcessWithoutNullStreams} proc - Lightpanda process
+ * @param {() => void} buffer - The 'readable' listener that kept stderr buffered
+ */
+const stderrTail = async (proc: ChildProcessWithoutNullStreams, buffer: () => void) => {
+  const chunks: Buffer[] = []
+  proc.stderr.off('readable', buffer)
+  proc.stderr.on('data', (chunk: Buffer) => chunks.push(chunk))
+  if (proc.exitCode === null && proc.signalCode === null) {
+    proc.kill()
+  }
+  if (!proc.stderr.closed) {
+    await once(proc.stderr, 'close')
+  }
+  const out = Buffer.concat(chunks).toString().trim()
+  return out ? `\n${out.split('\n').slice(-20).join('\n')}` : ''
+}
+
 /**
  * Start a websocket CDP server
+ * Resolves once the server answers on /json/version.
  * @param {LightpandaServeOptions} options - Options to pass to Lightpanda
  * @returns {Promise<ChildProcessWithoutNullStreams>}
  */
 export const serve = (options: LightpandaServeOptions = defaultOptions) => {
-  const { host, port, disableHostVerification, obeyRobots, enableExternalStylesheets, httpProxy } =
-    options
+  const {
+    host,
+    port,
+    disableHostVerification,
+    obeyRobots,
+    enableExternalStylesheets,
+    httpProxy,
+    args = [],
+  } = options
 
   if (port) {
     validatePort(port)
@@ -83,11 +128,42 @@ export const serve = (options: LightpandaServeOptions = defaultOptions) => {
         .flatMap(f => (f.value ? [f.flag, !f.flagOnly ? f.value.toString() : ''] : ''))
         .filter(f => f !== '')
 
-      const process = spawn(executablePath, ['serve', ...flags])
+      const process = spawn(executablePath, ['serve', ...flags, ...args])
+      // A 'readable' listener makes the stream buffer stderr without consuming
+      // it: read for error messages, left in place for the caller once ready.
+      const buffer = () => {}
+      process.stderr.on('readable', buffer)
 
       process.on('spawn', async () => {
-        await new Promise(resolve => setTimeout(resolve, 250))
-        resolve(process)
+        const url = versionUrl(host, port)
+        const deadline = Date.now() + READY_TIMEOUT_MS
+        while (Date.now() < deadline) {
+          if (process.exitCode !== null || process.signalCode !== null) {
+            reject(
+              new Error(
+                `Lightpanda exited (${process.exitCode ?? process.signalCode}) before serving on ${url}${await stderrTail(process, buffer)}`,
+              ),
+            )
+            return
+          }
+          try {
+            const res = await fetch(url, { signal: AbortSignal.timeout(1000) })
+            await res.arrayBuffer()
+            if (res.ok) {
+              process.stderr.off('readable', buffer)
+              resolve(process)
+              return
+            }
+          } catch {
+            // Not listening yet.
+          }
+          await new Promise(resolve => setTimeout(resolve, READY_POLL_MS))
+        }
+        reject(
+          new Error(
+            `Lightpanda did not answer on ${url} within ${READY_TIMEOUT_MS}ms${await stderrTail(process, buffer)}`,
+          ),
+        )
       })
       process.on('error', e => reject(e))
     } catch (e) {
