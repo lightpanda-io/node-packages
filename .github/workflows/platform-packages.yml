@@ -178,16 +178,14 @@ jobs:
     timeout-minutes: 10
     environment: npm
     permissions:
-      id-token: write # npm trusted publishing and provenance
+      id-token: write # npm provenance
       contents: read
     steps:
+      # registry-url makes setup-node write an .npmrc that reads NODE_AUTH_TOKEN.
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           registry-url: https://registry.npmjs.org
-
-      # Provenance under trusted publishing needs npm >= 11.5.1.
-      - run: npm install -g npm@latest
 
       - uses: actions/download-artifact@v4
         with:
@@ -195,8 +193,12 @@ jobs:
           path: tarballs
 
       # @lightpanda/browser itself is released with changesets.
+      # NPM_TOKEN is a secret of the npm environment. Trusted publishing can
+      # replace it once the packages exist on npm.
       - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           for tgz in tarballs/lightpanda-browser-linux-*.tgz tarballs/lightpanda-browser-darwin-*.tgz; do
-            npm publish "$tgz" --access public
+            npm publish "$tgz" --access public --provenance
           done
