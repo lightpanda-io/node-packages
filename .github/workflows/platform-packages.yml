@@ -3,10 +3,9 @@ name: Platform packages
 # Pack @lightpanda/browser and the @lightpanda/browser-<platform> packages with
 # the binaries of the pinned browser release, and test the install on each
 # platform. Dispatch with publish before releasing the @lightpanda/browser
-# version that pins them.
+# version that pins them. Pull requests only run the build and tests of main.yml.
 
 on:
-  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
