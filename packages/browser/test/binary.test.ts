@@ -18,7 +18,8 @@ const executable = (path: string, content: string) => {
 const fake = (name: string) => executable(join(root, name, 'lightpanda'), '\x7fELF not really')
 
 // Script shims on PATH (this package's own `lightpanda` CLI, as npm, pnpm or Yarn link it) are skipped.
-const shim = (name: string, content: string) => dirname(executable(join(root, name, 'lightpanda'), content))
+const shim = (name: string, content: string) =>
+  dirname(executable(join(root, name, 'lightpanda'), content))
 const shimDir = [
   shim('node-shim', '#!/usr/bin/env node\n'),
   shim('sh-shim', '#!/bin/sh\nexec node cli.js "$@"\n'),
