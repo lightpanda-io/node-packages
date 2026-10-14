@@ -48,15 +48,16 @@ export const bundledBinary = (): { path: string; version: string } | undefined =
 /** The bundled browser release, or `undefined` without a platform package. */
 export const bundledBrowserVersion = (): string | undefined => bundledBinary()?.version
 
-/** True for a Node script, such as this package's own `lightpanda` CLI on PATH. */
-const isNodeScript = (path: string): boolean => {
+/** True for an ELF or Mach-O executable, so script shims such as this package's own CLI are skipped. */
+const isNativeBinary = (path: string): boolean => {
   let fd: number | undefined
   try {
     fd = openSync(path, 'r')
-    const head = Buffer.alloc(128)
-    const n = readSync(fd, head, 0, head.length, 0)
-    const firstLine = head.toString('latin1', 0, n).split('\n')[0]
-    return firstLine.startsWith('#!') && firstLine.includes('node')
+    const head = Buffer.alloc(4)
+    if (readSync(fd, head, 0, 4, 0) < 4) return false
+    const magic = head.readUInt32BE(0)
+    // ELF, Mach-O 64-bit (little-endian on disk), universal Mach-O.
+    return magic === 0x7f454c46 || magic === 0xcffaedfe || magic === 0xcafebabe
   } catch {
     return false
   } finally {
@@ -102,7 +103,7 @@ export const lookupBinary = (explicit: string | undefined, sources: BinarySource
   for (const dir of (env.PATH ?? '').split(delimiter)) {
     if (!dir) continue
     const candidate = join(dir, BINARY_NAME)
-    if (isFile(candidate) && !isNodeScript(candidate)) return candidate
+    if (isNativeBinary(candidate)) return candidate
   }
 
   throw new ProcessError(
@@ -125,7 +126,7 @@ export const lookupBinary = (explicit: string | undefined, sources: BinarySource
  * 4. the binary `npx @lightpanda/browser install` put in `~/.cache/lightpanda-node`;
  * 5. the bundled platform package (`@lightpanda/browser-<platform>-<arch>`);
  * 6. a binary a 1.x `install` left in `~/.cache/lightpanda-node`;
- * 7. `PATH`, skipping Node scripts such as this package's own CLI.
+ * 7. `PATH`, native executables only, so a shim of this package's own CLI is skipped.
  *
  * Throws `ProcessError` when `explicit` or `$LIGHTPANDA_EXECUTABLE_PATH` is
  * set but not a file, or when none of the others is.
