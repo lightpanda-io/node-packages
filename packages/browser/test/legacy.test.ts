@@ -11,7 +11,7 @@ const ECHO = join(dirname(fileURLToPath(import.meta.url)), 'fixtures', 'echo-arg
 let lightpanda: typeof import('../index.js').lightpanda
 
 beforeAll(async () => {
-  // Read by the legacy lookup, which predates the `binary` option.
+  // Read by `findBinary` on each call.
   process.env.LIGHTPANDA_EXECUTABLE_PATH = ECHO
   lightpanda = (await import('../index.js')).lightpanda
 })

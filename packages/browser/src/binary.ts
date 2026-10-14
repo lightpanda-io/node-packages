@@ -120,7 +120,7 @@ export const lookupBinary = (explicit: string | undefined, sources: BinarySource
 /**
  * Locate the lightpanda binary, in order:
  *
- * 1. `explicit`, the `binary` option;
+ * 1. `explicit`, a path passed by the caller;
  * 2. `$LIGHTPANDA_EXECUTABLE_PATH`;
  * 3. `$LIGHTPANDA_BIN`;
  * 4. the binary `npx @lightpanda/browser install` put in `~/.cache/lightpanda-node`;
