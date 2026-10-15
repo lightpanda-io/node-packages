@@ -22,24 +22,34 @@ const brand = Symbol.for('@lightpanda/browser/errors')
 
 /** Base error of the package. */
 export class LightpandaError extends Error {
-  /** Set explicitly, since minification renames classes. */
+  /**
+   * Set explicitly, since minification renames classes. A subclass without its
+   * own `errorName` takes its class name and a plain prototype check instead.
+   */
   static readonly errorName: string = 'LightpandaError'
 
   static [Symbol.hasInstance](value: unknown): boolean {
-    if (typeof value !== 'object' || value === null) return false
-    const names = (value as { [brand]?: unknown })[brand]
     // biome-ignore lint/complexity/noThisInStatic: `this` is the class on the right of instanceof, maybe a subclass.
-    return Array.isArray(names) && names.includes(this.errorName)
+    return isInstance(this, value)
   }
 
   constructor(message: string, options?: ErrorOptions) {
     super(message, options)
-    this.name = new.target.errorName
+    this.name = Object.hasOwn(new.target, 'errorName') ? new.target.errorName : new.target.name
     const names = [LightpandaError.errorName]
     for (let c = new.target; c !== LightpandaError; c = Object.getPrototypeOf(c))
-      names.push(c.errorName)
+      if (Object.hasOwn(c, 'errorName')) names.push(c.errorName)
     Object.defineProperty(this, brand, { value: names })
   }
+}
+
+const isInstance = (cls: typeof LightpandaError, value: unknown): boolean => {
+  // The brand cannot tell a subclass without its own errorName from its parent.
+  if (!Object.hasOwn(cls, 'errorName'))
+    return Function.prototype[Symbol.hasInstance].call(cls, value)
+  if (typeof value !== 'object' || value === null) return false
+  const names = (value as { [brand]?: unknown })[brand]
+  return Array.isArray(names) && names.includes(cls.errorName)
 }
 
 /** The browser binary could not be found, started, or reached. */

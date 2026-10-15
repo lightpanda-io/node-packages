@@ -15,6 +15,15 @@ test('instanceof follows the class hierarchy', () => {
   expect(new Error('x')).not.toBeInstanceOf(LightpandaError)
 })
 
+test('a subclass without its own errorName keeps its name and a plain instanceof', () => {
+  class TimeoutError extends ProcessError {}
+  expect(new TimeoutError('x').name).toBe('TimeoutError')
+  expect(new TimeoutError('x')).toBeInstanceOf(TimeoutError)
+  expect(new TimeoutError('x')).toBeInstanceOf(ProcessError)
+  expect(new TimeoutError('x')).toBeInstanceOf(LightpandaError)
+  expect(new ProcessError('x')).not.toBeInstanceOf(TimeoutError)
+})
+
 // An app that loads the package through both import and require gets two copies.
 test('instanceof works across copies of the module', async () => {
   vi.resetModules()
