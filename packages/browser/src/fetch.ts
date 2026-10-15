@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { execSync } from 'node:child_process'
-import { getExecutablePath, validateUrl } from './utils.js'
+import { execFileSync } from 'node:child_process'
+import { findBinary } from './binary.js'
+import { validateUrl } from './utils.js'
 
 /**
  * @typedef LightpandaFetchOptions
@@ -63,18 +64,16 @@ export const fetch = (url: string, options: LightpandaFetchOptions = defaultOpti
 
   return new Promise<Buffer | string>((resolve, reject) => {
     try {
-      const executablePath = getExecutablePath()
       const flags = [
-        { flag: `--dump ${dumpOptions?.type ?? 'html'}`, condition: dump },
-        { flag: '--insecure-disable-tls-host-verification', condition: disableHostVerification },
-        { flag: '--obey-robots', condition: obeyRobots },
-        { flag: '--enable-external-stylesheets', condition: enableExternalStylesheets },
-        { flag: `--http-proxy ${httpProxy}`, condition: httpProxy },
+        ...(dump ? ['--dump', dumpOptions?.type ?? 'html'] : []),
+        ...(disableHostVerification ? ['--insecure-disable-tls-host-verification'] : []),
+        ...(obeyRobots ? ['--obey-robots'] : []),
+        ...(enableExternalStylesheets ? ['--enable-external-stylesheets'] : []),
+        ...(httpProxy ? ['--http-proxy', httpProxy] : []),
       ]
-        .map(f => (f.condition ? f.flag : ''))
-        .join(' ')
 
-      const e = execSync(`${executablePath} fetch ${flags} ${url}`)
+      // No shell: the bundled binary's path may contain spaces.
+      const e = execFileSync(findBinary(), ['fetch', ...flags, url])
 
       if (dump) {
         resolve(e.toString())

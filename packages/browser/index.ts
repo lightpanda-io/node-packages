@@ -23,3 +23,6 @@ export const lightpanda = {
   fetch,
   serve,
 }
+
+export { LightpandaError, ProcessError } from './src/errors.js'
+export { findBinary, bundledBrowserVersion } from './src/binary.js'
