@@ -21,7 +21,7 @@ concurrency:
 
 env:
   BROWSER_REPO: lightpanda-io/browser
-  NODE_VERSION: "22.16.0"
+  NODE_VERSION: "22.23.4"
 
 jobs:
   pack:

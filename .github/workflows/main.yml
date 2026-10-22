@@ -12,7 +12,7 @@ on:
 
 # Environment variables available to all jobs and steps in this workflow
 env:
-  NODE_VERSION: "22.16.0"
+  NODE_VERSION: "22.23.4"
 
 jobs:
   # Lint job
