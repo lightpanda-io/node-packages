@@ -168,6 +168,22 @@ Playwright connects with `chromium.connectOverCDP(server.wsEndpoint)`. Pass
 for the address the endpoints should use, and `args` for other
 `lightpanda serve` flags such as `--cdp-max-connections`.
 
+The browser's own log is dropped unless you ask for it: `verbose: true` lets
+it through to stderr, and `stderr` pipes it into a stream of yours, to save
+or parse it. Keep that stream draining, or the browser stalls once the pipe
+fills.
+
+```ts
+import { PassThrough } from 'node:stream'
+
+const stderr = new PassThrough()
+stderr.on('data', chunk => process.stdout.write(chunk))
+await using server = await CDPServer.launch({
+  stderr,
+  args: ['--log-format', 'logfmt', '--log-level', 'warn'],
+})
+```
+
 ### Drive it with WebDriver BiDi
 
 The browser also speaks [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/).

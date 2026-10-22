@@ -1,3 +1,4 @@
+import { PassThrough } from 'node:stream'
 import puppeteer from 'puppeteer-core'
 import { afterAll, describe, expect, test } from 'vitest'
 import { CDPServer, lightpanda } from '../index.js'
@@ -30,6 +31,28 @@ describe.skipIf(NO_BINARY)('CDPServer', () => {
       args: ['--advertise-host', 'localhost'],
     })
     expect((await server.version()).webSocketDebuggerUrl).toBe(`ws://localhost:${server.port}/`)
+  })
+
+  test('stderr receives the browser log', async () => {
+    const stderr = new PassThrough()
+    let log = ''
+    stderr.on('data', chunk => {
+      log += chunk
+    })
+    await using server = await CDPServer.launch({ binary, stderr })
+    expect(await eventually(() => log.includes('server running'))).toBe(true)
+    expect(log).toContain(`127.0.0.1:${server.port}`)
+  })
+
+  test('close returns once stderr has the whole log', async () => {
+    const stderr = new PassThrough()
+    let log = ''
+    stderr.on('data', chunk => {
+      log += chunk
+    })
+    const server = await CDPServer.launch({ binary, stderr, args: ['--log-level', 'info'] })
+    await server.close()
+    expect(log).toContain('Received termination signal')
   })
 
   test('puppeteer connects over CDP', async () => {

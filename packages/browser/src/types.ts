@@ -1,3 +1,4 @@
+import type { Writable } from 'node:stream'
 import type { BrowserFlags } from './flags.js'
 
 type Semver = `${number}.${number}.${number}`
@@ -32,6 +33,13 @@ export type ChildOptions = {
 export type ProcessOptions = ChildOptions & {
   /** Let the browser's own logging through to stderr. */
   verbose?: boolean
+  /**
+   * Pipe the browser's own logging into this stream instead, e.g. a file or a
+   * `PassThrough` to parse; takes precedence over `verbose`. The stream is not
+   * ended when the browser exits, but holds the whole log once `close()`
+   * returns. It must keep draining: a full pipe stalls the browser.
+   */
+  stderr?: Writable
 }
 
 /** Process options of the one-shot runs (`dump`, `runScript`). */

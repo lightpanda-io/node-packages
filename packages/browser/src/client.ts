@@ -112,7 +112,8 @@ const waitReady = async (proc: ChildProcess, port: number, host: string) => {
 /** SIGTERM, then SIGKILL if the process is still around after a grace period. */
 export const terminate = async (proc: ChildProcess) => {
   if (exited(proc)) return
-  const gone = new Promise(resolve => proc.once('exit', resolve))
+  // 'close', not 'exit': by then a piped stderr has delivered all of the log.
+  const gone = new Promise(resolve => proc.once('close', resolve))
   proc.kill('SIGTERM')
   const hammer = setTimeout(() => proc.kill('SIGKILL'), TERMINATE_GRACE_MS)
   await gone
@@ -227,7 +228,7 @@ export const spawnServer = async (
   mode: 'mcp' | 'serve',
   options: SpawnOptions = {},
 ): Promise<{ proc: ChildProcess; port: number }> => {
-  const { args = [], env, verbose = false, port, host = HOST } = options
+  const { args = [], env, verbose = false, stderr, port, host = HOST } = options
   const flags = [...browserFlagArgs(options), ...args]
   let lastError: Error | undefined
   for (let attempts = port === undefined ? SPAWN_ATTEMPTS : 1; attempts > 0; attempts--) {
@@ -235,9 +236,10 @@ export const spawnServer = async (
     pending.add(chosen)
     const proc = spawn(binary, [mode, '--port', String(chosen), '--host', host, ...flags], {
       // Never a piped-but-unread stderr: the browser would block once it fills.
-      stdio: ['ignore', 'ignore', verbose ? 'inherit' : 'ignore'],
+      stdio: ['ignore', 'ignore', stderr ? 'pipe' : verbose ? 'inherit' : 'ignore'],
       env: env ? { ...process.env, ...env } : process.env,
     })
+    if (stderr) proc.stderr?.pipe(stderr, { end: false })
     track(proc)
     try {
       await waitReady(proc, chosen, routableHost(host))
@@ -249,9 +251,9 @@ export const spawnServer = async (
       pending.delete(chosen)
     }
   }
-  throw new ProcessError(
-    `failed to start \`lightpanda ${mode}\`: ${lastError?.message}; pass verbose: true to see the browser log`,
-  )
+  // The hint only when the log went nowhere.
+  const hint = verbose || stderr ? '' : '; pass verbose: true to see the browser log'
+  throw new ProcessError(`failed to start \`lightpanda ${mode}\`: ${lastError?.message}${hint}`)
 }
 
 const describe = (err: unknown) => {
