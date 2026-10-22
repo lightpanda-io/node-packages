@@ -250,9 +250,9 @@ export const spawnServer = async (
       pending.delete(chosen)
     }
   }
-  throw new ProcessError(
-    `failed to start \`lightpanda ${mode}\`: ${lastError?.message}; pass verbose: true to see the browser log`,
-  )
+  // The hint only when the log went nowhere.
+  const hint = verbose || stderr ? '' : '; pass verbose: true to see the browser log'
+  throw new ProcessError(`failed to start \`lightpanda ${mode}\`: ${lastError?.message}${hint}`)
 }
 
 const describe = (err: unknown) => {
