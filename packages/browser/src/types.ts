@@ -36,8 +36,8 @@ export type ProcessOptions = ChildOptions & {
   /**
    * Pipe the browser's own logging into this stream instead, e.g. a file or a
    * `PassThrough` to parse; takes precedence over `verbose`. The stream is not
-   * ended when the browser exits, and must keep draining: a full pipe stalls
-   * the browser.
+   * ended when the browser exits, but holds the whole log once `close()`
+   * returns. It must keep draining: a full pipe stalls the browser.
    */
   stderr?: Writable
 }

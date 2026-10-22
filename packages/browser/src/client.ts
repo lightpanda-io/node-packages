@@ -112,7 +112,8 @@ const waitReady = async (proc: ChildProcess, port: number, host: string) => {
 /** SIGTERM, then SIGKILL if the process is still around after a grace period. */
 export const terminate = async (proc: ChildProcess) => {
   if (exited(proc)) return
-  const gone = new Promise(resolve => proc.once('exit', resolve))
+  // 'close', not 'exit': by then a piped stderr has delivered all of the log.
+  const gone = new Promise(resolve => proc.once('close', resolve))
   proc.kill('SIGTERM')
   const hammer = setTimeout(() => proc.kill('SIGKILL'), TERMINATE_GRACE_MS)
   await gone

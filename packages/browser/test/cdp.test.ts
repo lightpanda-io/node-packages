@@ -44,6 +44,17 @@ describe.skipIf(NO_BINARY)('CDPServer', () => {
     expect(log).toContain(`127.0.0.1:${server.port}`)
   })
 
+  test('close returns once stderr has the whole log', async () => {
+    const stderr = new PassThrough()
+    let log = ''
+    stderr.on('data', chunk => {
+      log += chunk
+    })
+    const server = await CDPServer.launch({ binary, stderr, args: ['--log-level', 'info'] })
+    await server.close()
+    expect(log).toContain('Received termination signal')
+  })
+
   test('puppeteer connects over CDP', async () => {
     await using server = await CDPServer.launch({ binary, userAgentSuffix: 'cdp-test/1.0' })
     const browser = await puppeteer.connect({ browserWSEndpoint: server.wsEndpoint })
