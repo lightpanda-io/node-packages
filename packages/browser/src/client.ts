@@ -227,7 +227,7 @@ export const spawnServer = async (
   mode: 'mcp' | 'serve',
   options: SpawnOptions = {},
 ): Promise<{ proc: ChildProcess; port: number }> => {
-  const { args = [], env, verbose = false, port, host = HOST } = options
+  const { args = [], env, verbose = false, stderr, port, host = HOST } = options
   const flags = [...browserFlagArgs(options), ...args]
   let lastError: Error | undefined
   for (let attempts = port === undefined ? SPAWN_ATTEMPTS : 1; attempts > 0; attempts--) {
@@ -235,9 +235,10 @@ export const spawnServer = async (
     pending.add(chosen)
     const proc = spawn(binary, [mode, '--port', String(chosen), '--host', host, ...flags], {
       // Never a piped-but-unread stderr: the browser would block once it fills.
-      stdio: ['ignore', 'ignore', verbose ? 'inherit' : 'ignore'],
+      stdio: ['ignore', 'ignore', stderr ? 'pipe' : verbose ? 'inherit' : 'ignore'],
       env: env ? { ...process.env, ...env } : process.env,
     })
+    if (stderr) proc.stderr?.pipe(stderr, { end: false })
     track(proc)
     try {
       await waitReady(proc, chosen, routableHost(host))
