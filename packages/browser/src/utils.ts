@@ -25,6 +25,8 @@ export const BINARY_NAME = 'lightpanda'
 
 export const USER_EXECUTABLE_PATH = process.env.LIGHTPANDA_EXECUTABLE_PATH
 export const DEFAULT_EXECUTABLE_PATH = `${DEFAULT_CACHE_FOLDER}/${BINARY_NAME}`
+/** Written by `install` next to the binary; a 1.x install left none. */
+export const VERSION_MARKER = 'version'
 export const VERSIONS_PATH = 'https://get.lightpanda.io/versions.json'
 
 /**
@@ -59,31 +61,6 @@ export const validatePort = (port: number): void => {
   if (port <= 0) {
     throw new Error(`Port should be a positive number ${port}`)
   }
-}
-
-/**
- * Get executable path
- */
-export const getExecutablePath = () => {
-  if (USER_EXECUTABLE_PATH) {
-    if (fs.existsSync(USER_EXECUTABLE_PATH)) {
-      return USER_EXECUTABLE_PATH
-    }
-
-    console.warn(
-      '⚠️ Lightpanda binary not found, please check your $LIGHTPANDA_EXECUTABLE_PATH environment variable.',
-    )
-    exit(1)
-  }
-
-  if (fs.existsSync(DEFAULT_EXECUTABLE_PATH)) {
-    return DEFAULT_EXECUTABLE_PATH
-  }
-
-  console.warn(
-    '⚠️ Lightpanda binary not installed, please run `npx @lightpanda/browser install <version>`',
-  )
-  exit(1)
 }
 
 /**

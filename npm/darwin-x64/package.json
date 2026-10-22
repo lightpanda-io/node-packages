@@ -1,0 +1,26 @@
+{
+  "name": "@lightpanda/browser-darwin-x64",
+  "version": "0.4.1",
+  "description": "Lightpanda browser binary for macOS x64. Installed by @lightpanda/browser; do not depend on it directly.",
+  "license": "AGPL-3.0",
+  "homepage": "https://lightpanda.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightpanda-io/node-packages.git",
+    "directory": "npm/darwin-x64"
+  },
+  "os": [
+    "darwin"
+  ],
+  "cpu": [
+    "x64"
+  ],
+  "files": [
+    "lightpanda"
+  ],
+  "preferUnplugged": true,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

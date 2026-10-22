@@ -13,13 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { constants, chmodSync, createWriteStream, existsSync, mkdirSync } from 'node:fs'
+import {
+  constants,
+  chmodSync,
+  createWriteStream,
+  existsSync,
+  mkdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
 import https from 'node:https'
 import { arch, exit, platform } from 'node:process'
 import {
   DEFAULT_CACHE_FOLDER,
   DEFAULT_EXECUTABLE_PATH,
   USER_EXECUTABLE_PATH,
+  VERSION_MARKER,
   checksumFile,
   getBinaryAttributes,
 } from './utils.js'
@@ -93,6 +102,10 @@ export const download = async (version: 'nightly' | string = 'nightly'): Promise
     exit(0)
   }
 
+  // Dropped first so a failed download never passes for an installed binary.
+  const marker = `${DEFAULT_CACHE_FOLDER}/${VERSION_MARKER}`
+  rmSync(marker, { force: true })
+
   try {
     console.info(`⏳ Downloading version ${binaryAttributes.version} of Lightpanda browser…`, '\n')
     await downloadBinary(binaryAttributes.url)
@@ -106,6 +119,7 @@ export const download = async (version: 'nightly' | string = 'nightly'): Promise
     }
 
     chmodSync(DEFAULT_EXECUTABLE_PATH, constants.S_IRWXU)
+    writeFileSync(marker, `${binaryAttributes.version}\n`)
 
     console.info('✅ Done!')
     exit(0)

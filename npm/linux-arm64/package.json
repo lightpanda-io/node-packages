@@ -1,0 +1,29 @@
+{
+  "name": "@lightpanda/browser-linux-arm64",
+  "version": "0.4.1",
+  "description": "Lightpanda browser binary for Linux arm64. Installed by @lightpanda/browser; do not depend on it directly.",
+  "license": "AGPL-3.0",
+  "homepage": "https://lightpanda.io",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lightpanda-io/node-packages.git",
+    "directory": "npm/linux-arm64"
+  },
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "arm64"
+  ],
+  "libc": [
+    "glibc"
+  ],
+  "files": [
+    "lightpanda"
+  ],
+  "preferUnplugged": true,
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

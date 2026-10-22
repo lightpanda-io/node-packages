@@ -59,10 +59,11 @@ jobs:
             YARN_ENABLE_IMMUTABLE_INSTALLS: false
         - name: Lint
           run: yarn typecheck
-  # Build job
+  # Build and test job
   build:
-    name: Build packages
+    name: Build and test packages
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -74,9 +75,27 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
+      # The pinned release, where the workspace-linked platform package expects it.
+      - name: Download the pinned browser
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(node -p "require('./npm/linux-x64/package.json').version")
+          gh release download "$version" -R lightpanda-io/browser \
+            -p lightpanda-x86_64-linux -O npm/linux-x64/lightpanda
+          chmod +x npm/linux-x64/lightpanda
       - name: Install dependencies
         run: yarn install --immutable
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - name: Check the generated tool methods
+        run: |
+          node packages/browser/scripts/generate-methods.mjs npm/linux-x64/lightpanda
+          git diff --exit-code -- packages/browser/src/methods.ts || {
+            echo "::error::src/methods.ts is out of date: run scripts/generate-methods.mjs and commit the result"
+            exit 1
+          }
       - name: Build all packages
         run: yarn build
+      - name: Test
+        run: yarn test

@@ -4,12 +4,13 @@
     "moduleResolution": "nodenext",
     "types": ["node"],
     "esModuleInterop": true,
-    "target": "es6",
+    "skipLibCheck": true,
+    "target": "es2022",
     "resolveJsonModule": true,
     "sourceMap": true,
+    "rootDir": ".",
     "outDir": "dist",
     "declaration": true,
-    "composite": true,
     "declarationMap": true,
     "paths": {
       "lightpanda/*": ["./src/*"],
@@ -17,5 +18,5 @@
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules, .yarn", "dist"]
+  "exclude": ["node_modules", ".yarn", "dist"]
 }
