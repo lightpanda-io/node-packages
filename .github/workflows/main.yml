@@ -88,6 +88,13 @@ jobs:
         run: yarn install --immutable
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
+      - name: Check the generated tool methods
+        run: |
+          node packages/browser/scripts/generate-methods.mjs npm/linux-x64/lightpanda
+          git diff --exit-code -- packages/browser/src/methods.ts || {
+            echo "::error::src/methods.ts is out of date: run scripts/generate-methods.mjs and commit the result"
+            exit 1
+          }
       - name: Build all packages
         run: yarn build
       - name: Test
